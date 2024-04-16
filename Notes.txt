@@ -1,0 +1,8 @@
+Implement and play around with these:
+- Redis
+- PostgreSQL
+- Roadmap ASP.NET stuff
+- MVC, RSC
+
+ToDo:
+	- Support for images, videos and GIFs
