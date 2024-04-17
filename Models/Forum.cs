@@ -3,28 +3,24 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ThreadShare.Models
 {
-    public class User
+    public class Forum
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-
         public string Name { get; set; }
+        public string Text { get; set; }
 
-        public string Surname { get; set; }
+        public int UserId { get; set; }
 
-        public string Username { get; set; }
+        [ForeignKey("UserId")]
+        public User User { get; set; } // Navigation property
 
-        public string password { get; set; }
+        public DateTime DateCreated { get; set; }
 
-        public string Email { get; set; }
-
-        public DateTime DateJoined { get; set; }
-
-        public User()
+        public Forum()
         {
-            DateJoined = DateTime.UtcNow;
+            DateCreated = DateTime.UtcNow;
         }
     }
 }
-
