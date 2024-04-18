@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace ThreadShare.Models
 {
-    public class User
+    public class User : IdentityUser
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
