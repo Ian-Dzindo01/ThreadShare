@@ -125,6 +125,9 @@ namespace ThreadShare.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
+                // ADD NEW FIELDS HERE. HAVE TO IMPLEMENT THE CHANGE IN 3 SPOTS.
+                user.Name = Input.Name;
+                user.Surname = Input.Surname;
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
