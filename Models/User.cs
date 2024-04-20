@@ -18,16 +18,15 @@ namespace ThreadShare.Models
         [Column(TypeName = "varchar(100)")]
         public string Surname { get; set; }
 
-        //public string Username { get; set; }
+        [Column(TypeName = "varchar(100)")]
+        public string Username { get; set; }
 
-        //public string Email { get; set; }
+        public DateTime DateJoined { get; set; }
 
-        //public DateTime DateJoined { get; set; }
-
-        //public User()
-        //{
-        //    DateJoined = DateTime.UtcNow;
-        //}
+        public User()
+        {
+            DateJoined = DateTime.UtcNow;
+        }
     }
 }
 
