@@ -12,8 +12,8 @@ using ThreadShare.Data;
 namespace ThreadShare.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240419102809_Initial migration")]
-    partial class Initialmigration
+    [Migration("20240420113305_initial migration")]
+    partial class initialmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
