@@ -6,3 +6,5 @@ Implement and play around with these:
 
 ToDo:
 	- Support for images, videos and GIFs
+	- Email confirmation
+	- Forgot passoword
