@@ -8,3 +8,6 @@ ToDo:
 	- Support for images, videos and GIFs
 	- Email confirmation
 	- Forgot passoword
+	- Change login form to display username and password
+
+Currenty logged in user will be stored in the AspNetCore.Identity.Application cookie
