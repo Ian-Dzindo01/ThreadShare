@@ -8,7 +8,6 @@
     @if (SignInManager.IsSignedIn(User))
     {   // MOVE TO THE .cs FILE!!!
         var user = await UserManager.GetUserAsync(User);
-
         <li class="nav-item">
             @if (user != null){
             <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @user.Name!</a> }
