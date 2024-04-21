@@ -43,6 +43,7 @@ namespace ThreadShare.Services
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
+            // String representation
             return tokenHandler.WriteToken(token);
         }
     }
