@@ -15,18 +15,26 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using ThreadShare.Models;
+using ThreadShare.Interfaces;
+using ThreadShare.DTOs;
+using ThreadShare.DTOs.Account;
 
 namespace ThreadShare.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {
         private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<User> _userManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly ITokenService _tokenService;
 
-        public LoginModel(SignInManager<User> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<User> signInManager, UserManager<User> userManager, 
+                          ILogger<LoginModel> logger, ITokenService tokenService)
         {
             _signInManager = signInManager;
+            _userManager = userManager;
             _logger = logger;
+            _tokenService = tokenService;
         }
 
         /// <summary>
@@ -120,7 +128,18 @@ namespace ThreadShare.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    // JWT return here
+                    var user = await _userManager.FindByEmailAsync(Input.Email);
+                    // Remove this
+                    if (user != null)
+                    {
+                        NewUserDTO UserDTO = new NewUserDTO
+                        {
+                            UserName = user.Username,
+                            Email = user.Email,
+                            Token = _tokenService.CreateToken(user)
+                        };
+
+                    // JWT here. Use HTTP Authorization header for transfer and storage.
                     _logger.LogInformation("User logged in.");
                     return LocalRedirect(returnUrl);
                 }
@@ -144,4 +163,9 @@ namespace ThreadShare.Areas.Identity.Pages.Account
             return Page();
         }
     }
+}
+
+new NewUserDTO
+{
+    UserName = User.
 }
