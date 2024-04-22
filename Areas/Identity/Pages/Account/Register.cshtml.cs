@@ -18,7 +18,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using ThreadShare.DTOs.Account;
+using ThreadShare.Interfaces;
 using ThreadShare.Models;
+using ThreadShare.Services;
 
 namespace ThreadShare.Areas.Identity.Pages.Account
 {
@@ -30,13 +33,16 @@ namespace ThreadShare.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<User> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly ITokenService _tokenService;
+
 
         public RegisterModel(
             UserManager<User> userManager,
             IUserStore<User> userStore,
             SignInManager<User> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            ITokenService tokenService)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -44,6 +50,7 @@ namespace ThreadShare.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _tokenService = tokenService;
         }
 
         /// <summary>
@@ -147,8 +154,6 @@ namespace ThreadShare.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
-
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -167,6 +172,16 @@ namespace ThreadShare.Areas.Identity.Pages.Account
                     }
                     else
                     {
+                        // Just the token for now
+                        NewUserDTO UserDTO = new NewUserDTO
+                        {
+                            UserName = user.Username,
+                            Email = user.Email,
+                            Token = _tokenService.CreateToken(user)
+                        };
+
+                        // JWT here. Use HTTP Authorization header for transfer and storage.
+                        Response.Headers.Add("Authorization", "Bearer " + UserDTO.Token);
                         await _signInManager.SignInAsync(user, isPersistent: false);
                         return LocalRedirect(returnUrl);
                     }
