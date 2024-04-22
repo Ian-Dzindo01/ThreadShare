@@ -18,6 +18,7 @@ using ThreadShare.Models;
 using ThreadShare.Interfaces;
 using ThreadShare.DTOs;
 using ThreadShare.DTOs.Account;
+using NuGet.Common;
 
 namespace ThreadShare.Areas.Identity.Pages.Account
 {
@@ -131,7 +132,8 @@ namespace ThreadShare.Areas.Identity.Pages.Account
                     var user = await _userManager.FindByEmailAsync(Input.Email);
                     // Remove this
                     if (user != null)
-                    {
+                    {   
+                        // Only using the Token for now
                         NewUserDTO UserDTO = new NewUserDTO
                         {
                             UserName = user.Username,
@@ -139,9 +141,11 @@ namespace ThreadShare.Areas.Identity.Pages.Account
                             Token = _tokenService.CreateToken(user)
                         };
 
-                    // JWT here. Use HTTP Authorization header for transfer and storage.
-                    _logger.LogInformation("User logged in.");
-                    return LocalRedirect(returnUrl);
+                        // JWT here. Use HTTP Authorization header for transfer and storage.
+                        Response.Headers.Add("Authorization", "Bearer " + UserDTO.Token);
+                        _logger.LogInformation("User logged in.");
+                        return LocalRedirect(returnUrl);
+                    }
                 }
                 if (result.RequiresTwoFactor)
                 {
@@ -163,9 +167,4 @@ namespace ThreadShare.Areas.Identity.Pages.Account
             return Page();
         }
     }
-}
-
-new NewUserDTO
-{
-    UserName = User.
 }
