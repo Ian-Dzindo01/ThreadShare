@@ -5,8 +5,6 @@ namespace ThreadShare.Models
 {
     public class Post
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string Title { get; set; }
         public string Body { get; set; }
@@ -15,6 +13,11 @@ namespace ThreadShare.Models
 
         //[ForeignKey("UserId")]
         //public User User { get; set; } // Navigation property
-        
+
+        //public int PostId { get; set; }
+
+        //[ForeignKey("PostId")]
+        //public Post Post { get; set; } // Navigation property
+
     }
 }

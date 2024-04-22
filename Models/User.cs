@@ -6,15 +6,12 @@ namespace ThreadShare.Models
 {
     public class User : IdentityUser
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [PersonalData]
         [Column(TypeName = "varchar(100)")]
         public string Name { get; set; }
 
-        [PersonalData]
         [Column(TypeName = "varchar(100)")]
         public string Surname { get; set; }
 
