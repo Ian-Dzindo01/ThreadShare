@@ -17,10 +17,10 @@ namespace ThreadShare.Models
         public int ForumId { get; set; }
 
         [ForeignKey("ForumId")]
-        public Forum Forum { get; set; } 
+        public Forum Forum { get; set; }
 
         // One to many relationship with Comment class
-        //public ICollection<Comment> Comments { get; set; }
+        public ICollection<Comment> Comments { get; set; }
 
     }
 }

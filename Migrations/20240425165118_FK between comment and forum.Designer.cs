@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ThreadShare.Data;
@@ -11,9 +12,11 @@ using ThreadShare.Data;
 namespace ThreadShare.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240425165118_FK between comment and forum")]
+    partial class FKbetweencommentandforum
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -283,13 +286,7 @@ namespace ThreadShare.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Forums");
                 });
@@ -306,9 +303,6 @@ namespace ThreadShare.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("ForumId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
@@ -318,8 +312,6 @@ namespace ThreadShare.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ForumId");
 
                     b.HasIndex("UserId");
 
@@ -426,39 +418,15 @@ namespace ThreadShare.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ThreadShare.Models.Forum", b =>
-                {
-                    b.HasOne("ThreadShare.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("ThreadShare.Models.Post", b =>
                 {
-                    b.HasOne("ThreadShare.Models.Forum", "Forum")
-                        .WithMany("Posts")
-                        .HasForeignKey("ForumId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("ThreadShare.Models.User", "User")
                         .WithMany("Posts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Forum");
-
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ThreadShare.Models.Forum", b =>
-                {
-                    b.Navigation("Posts");
                 });
 
             modelBuilder.Entity("ThreadShare.Models.Post", b =>

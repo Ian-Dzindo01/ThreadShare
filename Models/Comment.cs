@@ -12,12 +12,12 @@ namespace ThreadShare.Models
         [ForeignKey("UserId")]
         public User User { get; set; } // Navigation property
 
-        public string PostId { get; set; }
+        public int PostId { get; set; }
 
         [ForeignKey("PostId")]
         public Post Post { get; set; } // Navigation property
 
-        public string ForumId { get; set; }
+        public int ForumId { get; set; }
 
         [ForeignKey("ForumId")]
         public Forum Forum { get; set; } // Navigation property
