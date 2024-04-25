@@ -14,7 +14,7 @@ namespace ThreadShare.Models
         [ForeignKey("UserId")]
         public User User { get; set; }
 
-        //public ICollection<Post> Posts { get; set; }
+        public ICollection<Post> Posts { get; set; }
 
         public DateTime DateCreated { get; set; }
 
