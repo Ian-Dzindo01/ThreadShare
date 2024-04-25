@@ -20,6 +20,9 @@ namespace ThreadShare.Models
 
         public DateTime DateJoined { get; set; }
 
+        // One to many relationship with Post class
+        public ICollection<Post> Posts { get; set; }
+
         public User()
         {
             DateJoined = DateTime.UtcNow;

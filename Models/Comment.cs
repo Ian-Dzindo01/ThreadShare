@@ -9,18 +9,18 @@ namespace ThreadShare.Models
 
         public int UserId { get; set; }
 
-        [ForeignKey("UserId")]
-        public User User { get; set; } // Navigation property
+        //[ForeignKey("UserId")]
+        //public User User { get; set; } // Navigation property
 
-        public int PostId { get; set; }
+        //public int PostId { get; set; }
 
-        [ForeignKey("PostId")]
-        public Post Post { get; set; } // Navigation property
+        //[ForeignKey("PostId")]
+        //public Post Post { get; set; } // Navigation property
 
-        public int ForumId { get; set; }
+        //public int ForumId { get; set; }
 
-        [ForeignKey("ForumId")]
-        public Forum Forum { get; set; } // Navigation property
+        //[ForeignKey("ForumId")]
+        //public Forum Forum { get; set; } // Navigation property
 
     }
 }

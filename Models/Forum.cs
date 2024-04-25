@@ -9,10 +9,12 @@ namespace ThreadShare.Models
         public string Name { get; set; }
         public string Description { get; set; }
 
-        public int UserId { get; set; }
+        public string UserId { get; set; }
 
         [ForeignKey("UserId")]
-        public User User { get; set; } // Navigation property
+        public User User { get; set; }
+
+        //public ICollection<Post> Posts { get; set; }
 
         public DateTime DateCreated { get; set; }
 
