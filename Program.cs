@@ -7,14 +7,25 @@ using ThreadShare.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
 
 builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<AppDbContext>(options=>options.UseNpgsql
-                (builder.Configuration.GetConnectionString("DbConnectionString")));
+                (configuration.GetConnectionString("DbConnectionString")));
 
 builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<AppDbContext>();
+
+
+//builder.Services.AddIdentityServer().AddApiAuthorization<User, AppDbContext>();
+//builder.Services.AddAuthentication().AddIdentityServerJwt();
+
+builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+{
+    googleOptions.ClientId = configuration["Authentication:Google:ClientId"];
+    googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+});
 
 builder.Services.AddControllersWithViews();
 
