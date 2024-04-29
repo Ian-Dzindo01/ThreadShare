@@ -22,5 +22,7 @@ namespace ThreadShare.Models
         [ForeignKey("ForumId")]
         public Forum Forum { get; set; } // Navigation property
 
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime UpdatedAt { get; set; }
     }
 }

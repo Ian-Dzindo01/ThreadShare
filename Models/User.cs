@@ -27,6 +27,10 @@ namespace ThreadShare.Models
         {
             DateJoined = DateTime.UtcNow;
         }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime UpdatedAt { get; set; }
+
     }
 }
 

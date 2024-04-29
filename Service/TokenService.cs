@@ -5,8 +5,8 @@ using System.Text;
 using ThreadShare.Interfaces;
 using ThreadShare.Models;
 
-namespace ThreadShare.Services
-{
+namespace ThreadShare.Service
+{   
     public class TokenService : ITokenService
     {
         // Encrypt in specific way to our server

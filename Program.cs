@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ThreadShare.Data;
 using ThreadShare.Interfaces;
 using ThreadShare.Models;
-using ThreadShare.Services;
+using ThreadShare.Service;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,7 +14,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<AppDbContext>(options=>options.UseNpgsql
                 (configuration.GetConnectionString("DbConnectionString")));
 
-builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = false)
+builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<AppDbContext>();
 
 
