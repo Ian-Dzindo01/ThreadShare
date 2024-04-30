@@ -22,9 +22,14 @@ namespace ThreadShare.Models
         // One to many relationship with Comment class
         public ICollection<Comment> Comments { get; set; }
 
+        public DateTime DateCreated { get; set; }
+
+        public Post()
+        {
+            DateCreated = DateTime.UtcNow;
+        }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime UpdatedAt { get; set; }
-
     }
 }

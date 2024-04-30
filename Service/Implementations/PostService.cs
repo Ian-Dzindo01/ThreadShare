@@ -16,7 +16,14 @@ namespace ThreadShare.Service.Implementations
 
         public async Task CreatePost(Post post)
         {
+            var post = new Post
+            {
+                Title = model.Title,
+                Content = model.Content,
+                // Set other properties as needed
+            };
 
+            await _postRepository.AddAsync(post);
         }
 
         public async Task UpdatePost(Post post)
