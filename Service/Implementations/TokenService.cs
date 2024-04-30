@@ -2,8 +2,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using ThreadShare.Interfaces;
 using ThreadShare.Models;
+using ThreadShare.Service.Interfaces;
 
 namespace ThreadShare.Service.Implementations
 {

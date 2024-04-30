@@ -34,6 +34,7 @@ namespace ThreadShare.Repository.Implementations
         public async Task Update(int forumId)
         {
             var forumToUpdate = await _dbContext.Forums.FindAsync(forumId);
+
             _dbContext.Entry(forumToUpdate).State = (Microsoft.EntityFrameworkCore.EntityState)EntityState.Modified;
             await _dbContext.SaveChangesAsync();
         }

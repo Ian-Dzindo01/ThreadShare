@@ -15,10 +15,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using ThreadShare.Models;
-using ThreadShare.Interfaces;
 using ThreadShare.DTOs;
 using ThreadShare.DTOs.Account;
 using NuGet.Common;
+using ThreadShare.Service.Interfaces;
 
 namespace ThreadShare.Areas.Identity.Pages.Account
 {

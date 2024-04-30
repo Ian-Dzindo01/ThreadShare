@@ -4,10 +4,10 @@ namespace ThreadShare.Service.Interfaces
 {
     public interface IPostService
     {
-        void CreatePost(Post post);
-        void UpdatePost(Post post);
-        void DeletePost(int postId);
-        Post GetPostById(int postId);
-        IEnumerable<Post> GetAllPosts();
+        public Task CreatePost(Post post);
+        public Task UpdatePost(Post post);
+        public Task DeletePost(int postId);
+        public Task<Post> GetPostById(int postId);
+        public Task<List<Post>> GetAllPosts();
     }
 }

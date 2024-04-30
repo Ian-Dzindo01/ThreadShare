@@ -19,8 +19,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using ThreadShare.DTOs.Account;
-using ThreadShare.Interfaces;
 using ThreadShare.Models;
+using ThreadShare.Service.Interfaces;
 
 namespace ThreadShare.Areas.Identity.Pages.Account
 {

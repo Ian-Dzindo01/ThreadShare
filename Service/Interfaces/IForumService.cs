@@ -4,10 +4,10 @@ namespace ThreadShare.Service.Interfaces
 {
     public interface IForumService
     {
-        void CreateForum(Forum forum);
-        void UpdateForum(Forum forum);
-        void DeleteForum(int forumId);
-        Forum GetForumById(int forumId);
-        IEnumerable<Forum> GetAllForums();
+        public Task CreateForum(Forum forum);
+        public Task UpdateForum(Forum forum);
+        public Task DeleteForum(int forumId);
+        public Task<Forum> GetForumById(int forumId);
+        public Task<List<Forum>> GetAllForums();
     }
 }

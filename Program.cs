@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ThreadShare.Data;
-using ThreadShare.Interfaces;
 using ThreadShare.Models;
 using ThreadShare.Service.Implementations;
+using ThreadShare.Service.Interfaces;
 
 
 var builder = WebApplication.CreateBuilder(args);

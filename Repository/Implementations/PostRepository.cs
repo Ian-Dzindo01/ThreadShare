@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 using ThreadShare.Data;
 using ThreadShare.Models;
 using ThreadShare.Repository.Interfaces;
