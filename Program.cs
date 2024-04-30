@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ThreadShare.Data;
 using ThreadShare.Interfaces;
 using ThreadShare.Models;
-using ThreadShare.Service;
+using ThreadShare.Service.Implementations;
 
 
 var builder = WebApplication.CreateBuilder(args);

@@ -4,9 +4,10 @@ namespace ThreadShare.Repository.Interfaces
 {
     public interface IForumRepository
     {
-        Forum GetById(int id);
-        public void Add(Forum forum);
-        public void Delete(int id);
-        public void Update(int id);
+        Task<Forum> GetById(int id);
+        public Task Add(Forum forum);
+        public Task Delete(int id);
+        public Task Update(int id);
+        public Task<List<Forum>> GetAllForums();
     }
 }
