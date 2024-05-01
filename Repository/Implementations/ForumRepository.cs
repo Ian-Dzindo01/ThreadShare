@@ -5,7 +5,7 @@ using ThreadShare.Repository.Interfaces;
 
 namespace ThreadShare.Repository.Implementations
 {
-    public class ForumRepository : IForumRepository
+    public class ForumRepository : IRepository<Forum>
     {
         private readonly AppDbContext _dbContext;
 
@@ -30,7 +30,6 @@ namespace ThreadShare.Repository.Implementations
             }
         }
 
-        // Implement this.
         public async Task Update(Forum forumToUpdate)
         {
             _dbContext.Entry(forumToUpdate).State = EntityState.Modified;

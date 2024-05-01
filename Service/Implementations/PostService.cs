@@ -3,14 +3,15 @@ using ThreadShare.Data;
 using ThreadShare.Service.Interfaces;
 using ThreadShare.Repository.Interfaces;
 using ThreadShare.DTOs.Entites;
+using ThreadShare.Repository.Implementations;
 
 namespace ThreadShare.Service.Implementations
 {
     public class PostService : IPostService
     {
-        private readonly IPostRepository _postRepository;
+        private readonly PostRepository _postRepository;
 
-        public PostService(IPostRepository postRepository)
+        public PostService(PostRepository postRepository)
         {
             _postRepository = postRepository;
         }

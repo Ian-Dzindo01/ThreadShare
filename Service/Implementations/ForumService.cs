@@ -2,14 +2,15 @@
 using ThreadShare.Service.Interfaces;
 using ThreadShare.Repository.Interfaces;
 using ThreadShare.DTOs.Entites;
+using ThreadShare.Repository.Implementations;
 
 namespace ThreadShare.Service.Implementations
 {
     public class ForumService : IForumService
     {
-        private readonly IForumRepository _forumRepository;
+        private readonly ForumRepository _forumRepository;
 
-        public ForumService(IForumRepository forumRepository)
+        public ForumService(ForumRepository forumRepository)
         {
             _forumRepository = forumRepository;
         }

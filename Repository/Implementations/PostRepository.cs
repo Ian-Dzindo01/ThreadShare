@@ -5,7 +5,7 @@ using ThreadShare.Repository.Interfaces;
 
 namespace ThreadShare.Repository.Implementations
 {
-    public class PostRepository : IPostRepository
+    public class PostRepository : IRepository<Post>
     {
         private readonly AppDbContext _dbContext;
 
