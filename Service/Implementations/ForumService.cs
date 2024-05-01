@@ -1,5 +1,4 @@
 ﻿using ThreadShare.Models;
-using ThreadShare.Data;
 using ThreadShare.Service.Interfaces;
 using ThreadShare.Repository.Interfaces;
 using ThreadShare.DTOs.Entites;
@@ -17,32 +16,46 @@ namespace ThreadShare.Service.Implementations
 
         public async Task CreateForum(ForumViewModel model)
         {
+            var forum = new Forum
+            {
+                Name = model.Name,
+                Description = model.Description,
+                UserId = model.UserId,
+            };
 
-
-
-            _forumRepository.Add(forum);
+            await _forumRepository.Add(forum);
         }
 
-        public async Task UpdateForum(Forum forum)
+        public async Task UpdateForum(ForumViewModel model, int forumId)
         {
+            Forum existingForum = await _forumRepository.GetById(forumId);
 
-            _forumRepository.Update(f)
+            if (existingForum != null)
+            {
+                existingForum.Name = model.Name;
+                existingForum.Description = model.Description;
+
+                await _forumRepository.Update(existingForum);
+            }
+            else
+            {
+                throw new ArgumentException("Forum not found.");
+            }
         }
 
         public async Task DeleteForum(int forumId)
         {
-
+            await _forumRepository.Delete(forumId);
         }
 
         public async Task<Forum> GetForumById(int forumId)
         {
-
-
+            return await _forumRepository.GetById(forumId);
         }
 
         public async Task<List<Forum>> GetAllForums()
-        { 
-
+        {
+            return await _forumRepository.GetAllForums();
         }
     }
 }
