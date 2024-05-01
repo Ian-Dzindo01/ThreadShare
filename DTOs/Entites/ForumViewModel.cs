@@ -1,6 +1,6 @@
-﻿namespace ThreadShare.Models
+﻿namespace ThreadShare.DTOs.Entites
 {
-    public class ForumViewModel_
+    public class ForumViewModel
     {
         public string Name { get; set; }
 

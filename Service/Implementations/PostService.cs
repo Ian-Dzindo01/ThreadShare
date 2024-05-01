@@ -2,6 +2,7 @@
 using ThreadShare.Data;
 using ThreadShare.Service.Interfaces;
 using ThreadShare.Repository.Interfaces;
+using ThreadShare.DTOs.Entites;
 
 namespace ThreadShare.Service.Implementations
 {
@@ -14,37 +15,49 @@ namespace ThreadShare.Service.Implementations
             _postRepository = postRepository;
         }
 
-        public async Task CreatePost(Post post)
+        public async Task CreatePost(PostViewModel model)
         {
             var post = new Post
             {
                 Title = model.Title,
-                Content = model.Content,
-                // Set other properties as needed
+                Body = model.Body,
+                UserId = model.UserId,
+                ForumId = model.ForumId
             };
 
-            await _postRepository.AddAsync(post);
+            await _postRepository.Add(post);
         }
 
-        public async Task UpdatePost(Post post)
+        public async Task UpdatePost(PostViewModel model, int postId)
         {
+            Post existingPost = await _postRepository.GetById(postId);
 
+            if (existingPost != null)
+            {
+                existingPost.Title = model.Title;
+                existingPost.Body = model.Body;
+
+                await _postRepository.Update(existingPost);
+            }
+            else
+            {
+                throw new ArgumentException("Post not found.");
+            }
         }
 
         public async Task DeletePost(int postId)
         {
-
+            await _postRepository.Delete(postId); 
         }
 
         public async Task<Post> GetPostById(int postId)
         {
-
-
+            return await _postRepository.GetById(postId);
         }
 
         public async Task<List<Post>> GetAllPosts()
         {
-
+            return await _postRepository.GetAllPosts();
         }
     }
 }

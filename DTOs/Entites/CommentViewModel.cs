@@ -1,4 +1,4 @@
-﻿namespace ThreadShare.Models
+﻿namespace ThreadShare.DTOs.Entites
 {
     public class CommentViewModel
     {

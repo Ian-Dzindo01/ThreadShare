@@ -2,6 +2,7 @@
 using ThreadShare.Data;
 using ThreadShare.Service.Interfaces;
 using ThreadShare.Repository.Interfaces;
+using ThreadShare.DTOs.Entites;
 
 namespace ThreadShare.Service.Implementations
 {
@@ -14,8 +15,10 @@ namespace ThreadShare.Service.Implementations
             _forumRepository = forumRepository;
         }
 
-        public async Task CreateForum(Forum forum)
+        public async Task CreateForum(ForumViewModel model)
         {
+
+
 
             _forumRepository.Add(forum);
         }

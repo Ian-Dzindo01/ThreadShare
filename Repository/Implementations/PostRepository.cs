@@ -30,11 +30,9 @@ namespace ThreadShare.Repository.Implementations
             }
         }
 
-        // Implement this
-        public async Task Update(int postId)
+        public async Task Update(Post postToUpdate)
         {
-            var postToUpdate = await _dbContext.Forums.FindAsync(postId);
-            _dbContext.Entry(postToUpdate).State = (Microsoft.EntityFrameworkCore.EntityState)EntityState.Modified;
+            _dbContext.Entry(postToUpdate).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync();
         }
 
