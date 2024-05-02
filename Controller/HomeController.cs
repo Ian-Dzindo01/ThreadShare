@@ -2,11 +2,10 @@
 
 namespace ThreadShare.Controller
 {
-    public class HomeController : Controller
+    public class HomeController : ControllerBase
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+        //public IActionResult Index()
+        //{
+        //}
     }
 }

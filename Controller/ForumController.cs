@@ -4,9 +4,8 @@ namespace ThreadShare.Controller
 {
     public class ForumController : ControllerBase
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+        //public IActionResult Index()
+        //{
+        //}
     }
 }

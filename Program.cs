@@ -17,15 +17,18 @@ builder.Services.AddDbContext<AppDbContext>(options=>options.UseNpgsql
 builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<AppDbContext>();
 
-
-//builder.Services.AddIdentityServer().AddApiAuthorization<User, AppDbContext>();
-//builder.Services.AddAuthentication().AddIdentityServerJwt();
-
 builder.Services.AddAuthentication().AddGoogle(googleOptions =>
 {
     googleOptions.ClientId = configuration["Authentication:Google:ClientId"];
     googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"];
 });
+
+builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<IForumService, ForumService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
+
+//builder.Services.AddAuthentication();
+
 
 builder.Services.AddControllersWithViews();
 

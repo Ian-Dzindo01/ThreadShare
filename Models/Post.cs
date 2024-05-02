@@ -15,7 +15,7 @@ namespace ThreadShare.Models
         public User User { get; set; }
 
         public int ForumId { get; set; }
-
+            
         [ForeignKey("ForumId")]
         public Forum Forum { get; set; }
 
