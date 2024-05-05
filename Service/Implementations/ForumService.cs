@@ -8,9 +8,9 @@ namespace ThreadShare.Service.Implementations
 {
     public class ForumService : IForumService
     {
-        private readonly ForumRepository _forumRepository;
+        private readonly IRepository<Forum> _forumRepository;
 
-        public ForumService(ForumRepository forumRepository)
+        public ForumService(IRepository<Forum> forumRepository)
         {
             _forumRepository = forumRepository;
         }
@@ -33,7 +33,7 @@ namespace ThreadShare.Service.Implementations
 
             if (existingForum != null)
             {
-                existingForum.Name = model.Name;
+                existingForum.Name = model.Name;    
                 existingForum.Description = model.Description;
 
                 await _forumRepository.Update(existingForum);
@@ -54,9 +54,9 @@ namespace ThreadShare.Service.Implementations
             return await _forumRepository.GetById(forumId);
         }
 
-        public async Task<List<Forum>> GetAllForums()
-        {
-            return await _forumRepository.GetAllForums();
-        }
+        //public async Task<List<Forum>> GetAllForums()
+        //{
+        //    return await _forumRepository.GetAllForums();
+        //}
     }
 }

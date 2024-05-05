@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ThreadShare.Data;
 using ThreadShare.Models;
+using ThreadShare.Repository.Implementations;
+using ThreadShare.Repository.Interfaces;
 using ThreadShare.Service.Implementations;
 using ThreadShare.Service.Interfaces;
 
@@ -17,11 +19,16 @@ builder.Services.AddDbContext<AppDbContext>(options=>options.UseNpgsql
 builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<AppDbContext>();
 
+
 builder.Services.AddAuthentication().AddGoogle(googleOptions =>
 {
     googleOptions.ClientId = configuration["Authentication:Google:ClientId"];
     googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"];
 });
+
+builder.Services.AddScoped<IRepository<Post>, PostRepository>();
+builder.Services.AddScoped<IRepository<Forum>, ForumRepository>();
+builder.Services.AddScoped<IRepository<Comment>, CommentRepository>();
 
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IForumService, ForumService>();

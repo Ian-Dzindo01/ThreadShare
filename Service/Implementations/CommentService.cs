@@ -9,9 +9,9 @@ namespace ThreadShare.Service.Implementations
 {
     public class CommentService : ICommentService
     {
-        private readonly CommentRepository _commentRepository;
+        private readonly IRepository<Comment> _commentRepository;
 
-        public CommentService(CommentRepository commentRepository)
+        public CommentService(IRepository<Comment> commentRepository)
         {
             _commentRepository = commentRepository;
         }

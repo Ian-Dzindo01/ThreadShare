@@ -9,6 +9,6 @@ namespace ThreadShare.Service.Interfaces
         public Task UpdateForum(ForumViewModel model, int forumId);
         public Task DeleteForum(int forumId);
         public Task<Forum> GetForumById(int forumId);
-        public Task<List<Forum>> GetAllForums();
+        //public Task<List<Forum>> GetAllForums();
     }
 }

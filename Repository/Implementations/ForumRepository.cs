@@ -41,9 +41,9 @@ namespace ThreadShare.Repository.Implementations
             return await _dbContext.Forums.FindAsync(forumId);
         }
 
-        public async Task<List<Forum>> GetAllForums()
-        {
-            return await _dbContext.Forums.ToListAsync();
-        }
+        //public async Task<List<Forum>> GetAllForums()
+        //{
+        //    return await _dbContext.Forums.ToListAsync();
+        //}
     }
 }

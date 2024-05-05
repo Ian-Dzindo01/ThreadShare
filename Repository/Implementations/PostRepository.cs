@@ -41,9 +41,9 @@ namespace ThreadShare.Repository.Implementations
             return await _dbContext.Posts.FindAsync(postId);
         }
 
-        public async Task<List<Post>> GetAllPosts()
-        {
-            return await _dbContext.Posts.ToListAsync();
-        }
+        //public async Task<List<Post>> GetAllPosts()
+        //{
+        //    return await _dbContext.Posts.ToListAsync();
+        //}
     }
 }
