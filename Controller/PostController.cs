@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using ThreadShare.DTOs.Entites;
 using ThreadShare.Models;
 using ThreadShare.Service.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
-namespace YourNamespace.Controllers
+namespace Controllers.Posts
 {
     public class PostController : Controller
     {
@@ -28,6 +29,7 @@ namespace YourNamespace.Controllers
             return View();
         }
 
+        // Need 
         // POST: /Post/Create
         // Only respond to POST
         [HttpPost]
@@ -38,6 +40,9 @@ namespace YourNamespace.Controllers
         {
             if (ModelState.IsValid)
             {
+                string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                postViewModel.UserId = userId;
+
                 await _postService.CreatePost(postViewModel);
                 return RedirectToAction(nameof(Index));
             }
