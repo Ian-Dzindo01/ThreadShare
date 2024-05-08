@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using ThreadShare.DTOs.Data_Transfer;
 using ThreadShare.DTOs.Entites;
 using ThreadShare.Models;
 using ThreadShare.Service.Interfaces;
@@ -23,25 +24,35 @@ namespace Controllers.Forums
             return View();
         }
 
+        // The Name field is required.
+        // The Description field is required.
         // POST: /Forum/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name, Description")] ForumViewModel forumViewModel)
+        public async Task<IActionResult> Create([Bind("Name, Description")] ForumDTO forumDTO)
         {
             if (ModelState.IsValid)
             {
                 string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                forumViewModel.UserId = userId;
+                ForumViewModel forumViewModel = new ForumViewModel
+                {
+                    Name = forumDTO.Name,
+                    Description = forumDTO.Description,
+                    UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                };
 
                 await _forumService.CreateForum(forumViewModel);
-                return RedirectToAction(nameof(Index)); // Redirect to the forum list or index action
+                return RedirectToAction(nameof(Index));
             }
             else
             {
-                throw new Exception("Model state not Valid");
+                var errors = ModelState.Values.SelectMany(v => v.Errors);
+                foreach(var error in errors)
+                {
+                    Console.WriteLine(error.ErrorMessage.ToString());
+                }
+                return View();
             }
-            return View(forumViewModel);
-
         }
 
         //// GET: /Forum/Edit/5

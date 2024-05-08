@@ -29,7 +29,7 @@ namespace ThreadShare.Models
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
     }
 }
