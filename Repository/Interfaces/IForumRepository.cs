@@ -10,5 +10,6 @@ namespace ThreadShare.Repository.Interfaces
         public Task Delete(int id);
         public Task Update(Forum forum);
         public Task<List<Forum>> GetAllForums();
+        //public Task<bool> ForumExists(int forumId);
     }
 }

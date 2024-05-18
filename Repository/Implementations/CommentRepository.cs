@@ -40,5 +40,10 @@ namespace ThreadShare.Repository.Implementations
         {
             return await _dbContext.Comments.FindAsync(commentId);
         }
+
+        public async Task<bool> InstanceExists(int id)
+        {
+            return await _dbContext.Comments.AnyAsync(f => f.Id == id);
+        }
     }
 }

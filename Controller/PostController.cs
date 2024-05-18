@@ -5,16 +5,19 @@ using ThreadShare.DTOs.Entites;
 using ThreadShare.Models;
 using ThreadShare.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using ThreadShare.Service.Implementations;
 
 namespace Controllers.Posts
 {
     public class PostController : Controller
     {
         private readonly IPostService _postService;
+        private readonly IForumService _forumService;
 
-        public PostController(IPostService postService)
+        public PostController(IPostService postService, IForumService forumService)
         {
             _postService = postService;
+            _forumService = forumService;
         }
 
         //public async Task<IActionResult> Index()
@@ -29,42 +32,64 @@ namespace Controllers.Posts
             return View();
         }
 
-        // Need 
         // POST: /Post/Create
         // Only respond to POST
         [HttpPost]
-        // Prevent CSRF attacks
         [ValidateAntiForgeryToken]
-        // Convert to PostViewModel
-        public async Task<IActionResult> Create([Bind("Title, Content")] PostViewModel postViewModel)
+        public async Task<IActionResult> Create(IFormCollection formCollection)
         {
-            if (ModelState.IsValid)
-            {
-                string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                postViewModel.UserId = userId;
+            string title = formCollection["Title"];
+            string body = formCollection["Body"];
+            string forumIdString = formCollection["ForumId"];
 
-                await _postService.CreatePost(postViewModel);
-                return RedirectToAction(nameof(Index));
+            int forumId;
+            // Convert forumId to int
+            if (!int.TryParse(forumIdString, out forumId))
+            {
+                ModelState.AddModelError("ForumId", "Invalid Forum ID");
             }
-            return View(postViewModel);
+
+            if (!await _forumService.ForumExists(forumId))
+            {
+                ModelState.AddModelError("ForumId", "Forum ID does not exist");
+            }
+
+            if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(body))
+            {
+                ModelState.AddModelError("", "Both Title and Body are required");
+                return View();
+            }
+
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            PostViewModel postViewModel = new PostViewModel
+            {
+                Title = title,
+                Body = body,
+                UserId = userId,
+                ForumId = forumId
+            };
+
+            await _postService.CreatePost(postViewModel);
+            return Redirect("~/");
         }
+    }
+}
 
+//// GET: /Post/Edit/5
+//public async Task<IActionResult> Edit(int? id)
+//        {
+//            if (id == null)
+//            {
+//                return NotFound();
+//            }
 
-        // GET: /Post/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            Post post = await _postService.GetPostById(id.Value);
-            if (post == null)
-            {
-                return NotFound();
-            }
-            return View(post);
-        }
+//            Post post = await _postService.GetPostById(id.Value);
+//            if (post == null)
+//            {
+//                return NotFound();
+//            }
+//            return View(post);
+//        }
 
         // POST: /Post/Edit/5
         //[HttpPost]
@@ -109,5 +134,3 @@ namespace Controllers.Posts
         //    await _postService.DeletePost(id);
         //    return RedirectToAction(nameof(Index));
         //}
-    }
-}

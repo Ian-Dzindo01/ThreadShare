@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Data.Entity;
 using ThreadShare.Data;
 using ThreadShare.Models;
 using ThreadShare.Repository.Interfaces;
@@ -32,13 +33,18 @@ namespace ThreadShare.Repository.Implementations
 
         public async Task Update(Forum forumToUpdate)
         {
-            _dbContext.Entry(forumToUpdate).State = EntityState.Modified;
+            _dbContext.Entry(forumToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
             await _dbContext.SaveChangesAsync();
         }
 
         public async Task<Forum> GetById(int forumId)
         {
             return await _dbContext.Forums.FindAsync(forumId);
+        }
+
+        public async Task<bool> InstanceExists(int forumId)
+        {
+            return await _dbContext.Forums.AnyAsync(f => f.Id == forumId);
         }
 
         //public async Task<List<Forum>> GetAllForums()
