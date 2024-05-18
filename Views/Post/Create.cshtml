@@ -1,6 +1,4 @@
-﻿@model ThreadShare.DTOs.Entites.PostViewModel
-
-@{
+﻿@{
     ViewData["Title"] = "Create New Post";
 }
 
@@ -9,18 +7,18 @@
 <form asp-action="Create" method="post">
     @Html.AntiForgeryToken()
     <div class="form-group">
-        <label asp-for="Title" class="control-label">Title</label>
-        <input asp-for="Title" class="form-control" />
+        <label for="Title" class="control-label">Title</label>
+        <input id="Title" name="Title" class="form-control" />
         <span asp-validation-for="Title" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="Body" class="control-label">Body</label>
-        <textarea asp-for="Body" class="form-control"></textarea>
+        <label for="Body" class="control-label">Body</label>
+        <textarea id="Body" name="Body" class="form-control"></textarea>
         <span asp-validation-for="Body" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="ForumId" class="control-label">Forum ID</label>
-        <input asp-for="ForumId" class="form-control" />
+        <label for="ForumId" class="control-label">Forum ID</label>
+        <input id="ForumId" name="ForumId" type="number" class="form-control" />
         <span asp-validation-for="ForumId" class="text-danger"></span>
     </div>
     <button type="submit" class="btn btn-primary">Create Post</button>
