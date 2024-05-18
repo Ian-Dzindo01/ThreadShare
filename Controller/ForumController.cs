@@ -24,36 +24,34 @@ namespace Controllers.Forums
             return View();
         }
 
-        // The Name field is required.
-        // The Description field is required.
         // POST: /Forum/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name, Description")] ForumDTO forumDTO)
+        public async Task<IActionResult> Create(IFormCollection formCollection)
         {
-            if (ModelState.IsValid)
-            {
-                string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                ForumViewModel forumViewModel = new ForumViewModel
-                {
-                    Name = forumDTO.Name,
-                    Description = forumDTO.Description,
-                    UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
-                };
+            string name = formCollection["Name"];
+            string description = formCollection["Description"];
 
-                await _forumService.CreateForum(forumViewModel);
-                return RedirectToAction(nameof(Index));
-            }
-            else
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(description))
             {
-                var errors = ModelState.Values.SelectMany(v => v.Errors);
-                foreach(var error in errors)
-                {
-                    Console.WriteLine(error.ErrorMessage.ToString());
-                }
+                ModelState.AddModelError("", "Both Name and Description are required");
                 return View();
             }
+
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            ForumViewModel forumViewModel = new ForumViewModel
+            {
+                Name = name,
+                Description = description,
+                UserId = userId
+            };
+
+            await _forumService.CreateForum(forumViewModel);
+            // Redirect to homepage
+            return Redirect("~/");
         }
+    }
+}
 
         //// GET: /Forum/Edit/5
         //public async Task<IActionResult> Edit(int? id)
@@ -88,5 +86,3 @@ namespace Controllers.Forums
         //    }
         //    return View(forum);
         //}
-    }
-}
