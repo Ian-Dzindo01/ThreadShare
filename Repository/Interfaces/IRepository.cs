@@ -1,4 +1,6 @@
-﻿namespace ThreadShare.Repository.Interfaces
+﻿using ThreadShare.Models;
+
+namespace ThreadShare.Repository.Interfaces
 {
     public interface IRepository<TEntity> where TEntity: class
     {

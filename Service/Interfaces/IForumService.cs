@@ -10,6 +10,6 @@ namespace ThreadShare.Service.Interfaces
         public Task DeleteForum(int forumId);
         public Task<Forum> GetForumById(int forumId);
         public Task<bool> ForumExists(int forumId);
-        //public Task<List<Forum>> GetAllForums();
+        public Task<List<Forum>> GetAllForums();
     }
 }

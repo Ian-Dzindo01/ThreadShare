@@ -9,6 +9,7 @@ namespace ThreadShare.Service.Interfaces
         public Task UpdatePost(PostViewModel post, int postId);
         public Task DeletePost(int postId);
         public Task<Post> GetPostById(int postId);
+        public Task<IEnumerable<Post>> GetNewestPosts();
         //public Task<List<Post>> GetAllPosts();
     }
 }

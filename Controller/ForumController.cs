@@ -23,6 +23,7 @@ namespace Controllers.Forums
             return View();
         }
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(IFormCollection formCollection)

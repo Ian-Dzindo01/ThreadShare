@@ -6,7 +6,7 @@ using ThreadShare.Repository.Interfaces;
 
 namespace ThreadShare.Repository.Implementations
 {
-    public class ForumRepository : IRepository<Forum>
+    public class ForumRepository : IForumRepository
     {
         private readonly AppDbContext _dbContext;
 
@@ -47,9 +47,9 @@ namespace ThreadShare.Repository.Implementations
             return await _dbContext.Forums.AnyAsync(f => f.Id == forumId);
         }
 
-        //public async Task<List<Forum>> GetAllForums()
-        //{
-        //    return await _dbContext.Forums.ToListAsync();
-        //}
+        public async Task<List<Forum>> GetAllForums()
+        {
+            return await _dbContext.Forums.ToListAsync();
+        }
     }
 }

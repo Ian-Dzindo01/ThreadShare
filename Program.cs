@@ -26,8 +26,8 @@ builder.Services.AddAuthentication().AddGoogle(googleOptions =>
     googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"];
 });
 
-builder.Services.AddScoped<IRepository<Post>, PostRepository>();
-builder.Services.AddScoped<IRepository<Forum>, ForumRepository>();
+builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<IForumRepository, ForumRepository>();
 builder.Services.AddScoped<IRepository<Comment>, CommentRepository>();
 
 builder.Services.AddScoped<IPostService, PostService>();

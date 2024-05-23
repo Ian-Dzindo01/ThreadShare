@@ -8,6 +8,6 @@ namespace ThreadShare.Repository.Interfaces
         public Task Add(Post post);
         public Task Delete(int id);
         public Task Update(Post post);
-        public Task<List<Post>> GetAllPosts();
+        public Task<IEnumerable<Post>> GetNewest();
     }
 }

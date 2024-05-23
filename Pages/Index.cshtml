@@ -1,10 +1,25 @@
-﻿@page
-@model IndexModel
+﻿@model ThreadShare.Models.HomePageViewModel
+
 @{
     ViewData["Title"] = "Home page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Ide Samke</h1>
-    <p></p>
+    <p>Welcome to the forum. Here are the latest posts:</p>
+</div>
+
+<div>
+    <h2>Newest Posts</h2>
+    <ul>
+        @foreach (var post in Model.NewestPosts)
+        {
+            var forum = Model.Forums.FirstOrDefault(f => f.Id == post.ForumId);
+            <li>
+                <h3>@post.Title</h3>
+                <p>@post.Body</p>
+                <p><strong>Forum:</strong> @forum?.Name</p>
+            </li>
+        }
+    </ul>
 </div>

@@ -9,9 +9,9 @@ namespace ThreadShare.Service.Implementations
 {
     public class PostService : IPostService
     {
-        private readonly IRepository<Post> _postRepository;
+        private readonly IPostRepository _postRepository;
 
-        public PostService(IRepository<Post> postRepository)
+        public PostService(IPostRepository postRepository)
         {
             _postRepository = postRepository;
         }
@@ -54,6 +54,11 @@ namespace ThreadShare.Service.Implementations
         public async Task<Post> GetPostById(int postId)
         {
             return await _postRepository.GetById(postId);
+        }
+
+        public async Task<IEnumerable<Post>> GetNewestPosts()
+        {
+            return await _postRepository.GetNewest();
         }
 
         //public async Task<List<Post>> GetAllPosts()

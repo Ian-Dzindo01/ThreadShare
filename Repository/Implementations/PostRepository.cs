@@ -6,7 +6,7 @@ using ThreadShare.Repository.Interfaces;
 
 namespace ThreadShare.Repository.Implementations
 {
-    public class PostRepository : IRepository<Post>
+    public class PostRepository : IPostRepository
     {
         private readonly AppDbContext _dbContext;
 
@@ -46,6 +46,17 @@ namespace ThreadShare.Repository.Implementations
         {
             return await _dbContext.Posts.AnyAsync(f => f.Id == id);
         }
+
+        // Load all of them in for now
+        public async Task<IEnumerable<Post>> GetNewest()
+        {
+            var newestPosts = await _dbContext.Posts
+                .OrderByDescending(p => p.DateCreated)
+                .ToListAsync();
+
+            return newestPosts;
+        }
+
 
         //public async Task<List<Post>> GetAllPosts()
         //{
