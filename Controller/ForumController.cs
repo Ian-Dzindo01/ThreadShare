@@ -18,13 +18,11 @@ namespace Controllers.Forums
             _forumService = forumService;
         }
 
-        // GET: /Forum/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: /Forum/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(IFormCollection formCollection)
@@ -47,13 +45,33 @@ namespace Controllers.Forums
             };
 
             await _forumService.CreateForum(forumViewModel);
-            // Redirect to homepage
+            return Redirect("~/");
+        }
+
+        // GET
+        public IActionResult Delete()
+        {
+            return View();
+        }
+
+        // POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int forumId)
+        {
+            Console.WriteLine($"Forum Id is {forumId}");
+            var forum = await _forumService.GetForumById(forumId);
+            if (forum == null)
+            {
+                return NotFound();
+            }
+
+            await _forumService.DeleteForum(forumId);
             return Redirect("~/");
         }
     }
 }
 
-        //// GET: /Forum/Edit/5
         //public async Task<IActionResult> Edit(int? id)
         //{
         //    if (id == null)
@@ -69,7 +87,6 @@ namespace Controllers.Forums
         //    return View(forum);
         //}
 
-        //// POST: /Forum/Edit/5
         //[HttpPost]
         //[ValidateAntiForgeryToken]
         //public async Task<IActionResult> Edit(int id, [Bind("Id, Name, Description")] Forum forum)

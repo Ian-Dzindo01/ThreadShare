@@ -1,14 +1,18 @@
-﻿@model ThreadShare.Models.Post
+﻿@{
+    ViewData["Title"] = "Delete Forum";
+}
 
-<h1>Delete Post</h1>
+<h1>Delete Forum</h1>
 
 <div>
-    <h4>Are you sure you want to delete this post?</h4>
-    <h2>@Model.Title</h2>
-    <p>@Model.Body</p>
-    <form method="post">
+    <h4>Enter the ID of the forum you want to delete:</h4>
+    <form asp-action="DeleteConfirmed" method="post">
         @Html.AntiForgeryToken()
-        <input type="hidden" asp-for="Id" />
+        <div class="form-group">
+            <label for="ForumId" class="control-label">Forum ID</label>
+            <input id="ForumId" name="ForumId" type="number" class="form-control" required />
+            <span asp-validation-for="ForumId" class="text-danger"></span>
+        </div>
         <button type="submit" class="btn btn-danger">Delete</button>
         <a asp-action="Index" class="btn btn-secondary">Cancel</a>
     </form>
