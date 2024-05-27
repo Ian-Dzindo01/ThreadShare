@@ -9,17 +9,23 @@
     <div class="form-group">
         <label for="Title" class="control-label">Title</label>
         <input id="Title" name="Title" class="form-control" />
-        <span asp-validation-for="Title" class="text-danger"></span>
+        <span class="text-danger"></span>
     </div>
     <div class="form-group">
         <label for="Body" class="control-label">Body</label>
         <textarea id="Body" name="Body" class="form-control"></textarea>
-        <span asp-validation-for="Body" class="text-danger"></span>
+        <span class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label for="ForumName" class="control-label">Forum Name</label>
-        <input id="ForumName" name="ForumName" type="text" class="form-control" />
-        <span asp-validation-for="ForumName" class="text-danger"></span>
+        <label for="ForumName" class="control-label">Forum</label>
+        <select id="ForumName" name="ForumName" class="form-control">
+            <option value="">Select a forum</option>
+            @foreach (var forum in ViewBag.Forums)
+            {
+                <option value="@forum.Id">@forum.Name</option>
+            }
+        </select>
+        <span class="text-danger"></span>
     </div>
     <button type="submit" class="btn btn-primary">Create Post</button>
 </form>

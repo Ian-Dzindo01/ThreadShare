@@ -17,8 +17,12 @@ namespace Controllers.Posts
         }
 
         // GET: /Post/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var forums = await _forumService.GetAllForums();
+
+            ViewBag.Forums = forums;
+
             return View();
         }
 
@@ -30,23 +34,15 @@ namespace Controllers.Posts
         {
             string title = formCollection["Title"];
             string body = formCollection["Body"];
-            string forumName = formCollection["Forum"];
+            string forumIdStr = formCollection["ForumName"];
 
-            //int forumId;
-            // Convert forumId to int
-            //if (!int.TryParse(forumName, out forumId))
-            //{
-            //    ModelState.AddModelError("ForumId", "Invalid Forum ID");
-            //}
+            Console.WriteLine(forumIdStr);
 
-            var forumId = await _forumService.GetForumIdByName(forumName);
-
-            if (forumId == null)
+            if (string.IsNullOrEmpty(forumIdStr) || !int.TryParse(forumIdStr, out int forumId))
             {
-                throw new ArgumentException("Forum with the specified name does not exist.");
+                ModelState.AddModelError("ForumId", "Invalid Forum ID");
+                return View();
             }
-
-            int nnForumId = forumId.Value;
 
             if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(body))
             {
@@ -55,12 +51,13 @@ namespace Controllers.Posts
             }
 
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             PostViewModel postViewModel = new PostViewModel
             {
                 Title = title,
                 Body = body,
                 UserId = userId,
-                ForumId = nnForumId
+                ForumId = forumId
             };
 
             await _postService.CreatePost(postViewModel);
@@ -68,63 +65,3 @@ namespace Controllers.Posts
         }
     }
 }
-
-//// GET: /Post/Edit/5
-//public async Task<IActionResult> Edit(int? id)
-//        {
-//            if (id == null)
-//            {
-//                return NotFound();
-//            }
-
-//            Post post = await _postService.GetPostById(id.Value);
-//            if (post == null)
-//            {
-//                return NotFound();
-//            }
-//            return View(post);
-//        }
-
-        // POST: /Post/Edit/5
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit(int id, [Bind("Id, Title, Content")] Post post)
-        //{
-        //    if (id != post.Id)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        await _postService.UpdatePost(post, id);
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(post);
-        //}
-
-        //// GET: /Post/Delete/5
-        //public async Task<IActionResult> Delete(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    Post post = await _postService.GetPostById(id.Value);
-        //    if (post == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return View(post);
-        //}
-
-        //// POST: /Post/Delete/5
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> DeleteConfirmed(int id)
-        //{
-        //    await _postService.DeletePost(id);
-        //    return RedirectToAction(nameof(Index));
-        //}
