@@ -36,8 +36,7 @@ builder.Services.AddScoped<ICommentService, CommentService>();
 
 //builder.Services.AddAuthentication();
 
-
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {

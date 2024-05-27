@@ -51,5 +51,14 @@ namespace ThreadShare.Repository.Implementations
         {
             return await _dbContext.Forums.ToListAsync();
         }
+
+        public async Task<int?> GetForumIdByName(string name)
+        {
+            var forumId = await _dbContext.Forums
+                                           .Where(f => f.Name == name)
+                                           .Select(f => (int?)f.Id) 
+                                           .FirstOrDefaultAsync();
+            return forumId;
+        }
     }
 }

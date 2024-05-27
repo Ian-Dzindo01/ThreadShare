@@ -1,11 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using System.Security.Claims;
 using ThreadShare.DTOs.Entites;
-using ThreadShare.Models;
 using ThreadShare.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using ThreadShare.Service.Implementations;
 
 namespace Controllers.Posts
 {
@@ -19,12 +15,6 @@ namespace Controllers.Posts
             _postService = postService;
             _forumService = forumService;
         }
-
-        //public async Task<IActionResult> Index()
-        //{
-        //    List<Post> posts = await _postService.GetAllPosts();
-        //    return View(posts);
-        //}
 
         // GET: /Post/Create
         public IActionResult Create()
@@ -40,19 +30,23 @@ namespace Controllers.Posts
         {
             string title = formCollection["Title"];
             string body = formCollection["Body"];
-            string forumIdString = formCollection["ForumId"];
+            string forumName = formCollection["Forum"];
 
-            int forumId;
+            //int forumId;
             // Convert forumId to int
-            if (!int.TryParse(forumIdString, out forumId))
+            //if (!int.TryParse(forumName, out forumId))
+            //{
+            //    ModelState.AddModelError("ForumId", "Invalid Forum ID");
+            //}
+
+            var forumId = await _forumService.GetForumIdByName(forumName);
+
+            if (forumId == null)
             {
-                ModelState.AddModelError("ForumId", "Invalid Forum ID");
+                throw new ArgumentException("Forum with the specified name does not exist.");
             }
 
-            if (!await _forumService.ForumExists(forumId))
-            {
-                ModelState.AddModelError("ForumId", "Forum ID does not exist");
-            }
+            int nnForumId = forumId.Value;
 
             if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(body))
             {
@@ -66,7 +60,7 @@ namespace Controllers.Posts
                 Title = title,
                 Body = body,
                 UserId = userId,
-                ForumId = forumId
+                ForumId = nnForumId
             };
 
             await _postService.CreatePost(postViewModel);

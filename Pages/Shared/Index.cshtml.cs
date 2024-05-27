@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace ThreadShare.Pages
+namespace ThreadShare.Pages.Shared
 {
     public class IndexModel : PageModel
     {

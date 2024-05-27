@@ -11,5 +11,6 @@ namespace ThreadShare.Repository.Interfaces
         public Task Update(Forum forum);
         public Task<List<Forum>> GetAllForums();
         Task<bool> InstanceExists(int id);
+        public Task<int?> GetForumIdByName(string name);
     }
 }

@@ -11,5 +11,6 @@ namespace ThreadShare.Service.Interfaces
         public Task<Forum> GetForumById(int forumId);
         public Task<bool> ForumExists(int forumId);
         public Task<List<Forum>> GetAllForums();
+        public Task<int?> GetForumIdByName(string name);
     }
 }

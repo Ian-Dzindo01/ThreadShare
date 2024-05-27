@@ -59,6 +59,11 @@ namespace ThreadShare.Service.Implementations
             return await _forumRepository.InstanceExists(forumId);
         }
 
+        public async Task<int?> GetForumIdByName(string name)
+        {
+            return await _forumRepository.GetForumIdByName(name);
+        }
+
         public async Task<List<Forum>> GetAllForums()
         {
             return await _forumRepository.GetAllForums();

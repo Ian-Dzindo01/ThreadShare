@@ -1,7 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Linq;
-using System.Threading.Tasks;
-using ThreadShare.Service.Implementations;
 using ThreadShare.Service.Interfaces;
 using ThreadShare.Models; 
 
