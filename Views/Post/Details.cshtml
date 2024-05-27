@@ -1,0 +1,10 @@
+﻿@model ThreadShare.DTOs.Entites.PostDetailsViewModel
+
+@{
+    ViewData["Title"] = Model.Post.Title;
+}
+
+<h1>@Model.Post.Title</h1>
+<p>@Model.Post.Body</p>
+<p><strong>Forum:</strong> @Model.Forum.Name</p>
+<p><strong>Posted by:</strong> @Model.Post.UserId</p>

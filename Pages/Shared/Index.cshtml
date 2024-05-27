@@ -11,7 +11,9 @@
         {
             var forum = Model.Forums.FirstOrDefault(f => f.Id == post.ForumId);
             <li>
-                <h3>@post.Title</h3>
+                <h3>
+                    <a href="@Url.Action("Details", "Post", new { id = post.Id })">@post.Title</a>
+                </h3>
                 <p>@post.Body</p>
                 <p><strong>Forum:</strong> @forum?.Name</p>
             </li>

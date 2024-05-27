@@ -63,5 +63,23 @@ namespace Controllers.Posts
             await _postService.CreatePost(postViewModel);
             return Redirect("~/");
         }
+
+        // GET: /Post/Details/5
+        public async Task<IActionResult> Details(int id)
+        {
+            var post = await _postService.GetPostById(id);
+            if (post == null)
+            {
+                return NotFound();
+            }
+            var forum = await _forumService.GetForumById(post.ForumId);
+
+            var viewModel = new PostDetailsViewModel
+            {
+                Post = post,
+                Forum = forum
+            };
+            return View(viewModel);
+        }
     }
 }
