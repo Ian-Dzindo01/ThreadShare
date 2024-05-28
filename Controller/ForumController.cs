@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using ThreadShare.DTOs.Data_Transfer;
 using ThreadShare.DTOs.Entites;
-using ThreadShare.Models;
 using ThreadShare.Service.Interfaces;
+using ThreadShare.Models;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace Controllers.Forums
 {
@@ -24,8 +23,7 @@ namespace Controllers.Forums
         }
 
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize]
         public async Task<IActionResult> Create(IFormCollection formCollection)
         {
             string name = formCollection["Name"];
@@ -56,8 +54,7 @@ namespace Controllers.Forums
         }
 
         // POST
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize]
         public async Task<IActionResult> Delete(int forumId)
         {
             Console.WriteLine($"Forum Id is {forumId}");
@@ -73,34 +70,37 @@ namespace Controllers.Forums
     }
 }
 
-        //public async Task<IActionResult> Edit(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
+    //    public async Task<IActionResult> Edit(int? id)
+    //    {
+    //        if (id == null)
+    //        {
+    //            return NotFound();
+    //        }
 
-        //    Forum forum = await _forumService.GetForumById(id.Value);
-        //    if (forum == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return View(forum);
-        //}
+    //        Forum forum = await _forumService.GetForumById(id.Value);
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit(int id, [Bind("Id, Name, Description")] Forum forum)
-        //{
-        //    if (id != forum.Id)
-        //    {
-        //        return NotFound();
-        //    }
+    //        if (forum == null)
+    //        {
+    //            return NotFound();
+    //        }
 
-        //    if (ModelState.IsValid)
-        //    {
-        //        await _forumService.UpdateForum(forum, id);
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(forum);
-        //}
+    //        return View(forum);
+    //    }
+
+    //    [HttpPost]
+    //    [ValidateAntiForgeryToken]
+    //    public async Task<IActionResult> Edit(int id, [Bind("Id, Name, Description")] Forum forum)
+    //    {
+    //        if (id != forum.Id)
+    //        {
+    //            return NotFound();
+    //        }
+
+    //        if (ModelState.IsValid)
+    //        {
+    //            await _forumService.UpdateForum(forum, id);
+    //            return RedirectToAction(nameof(Index));
+    //        }
+    //        return View(forum);
+    //    }
+    //}

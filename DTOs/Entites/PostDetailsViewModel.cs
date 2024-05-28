@@ -6,5 +6,6 @@ namespace ThreadShare.DTOs.Entites
     {
         public Post Post { get; set; }
         public Forum Forum { get; set; }
+        public string Username { get; set; }
     }
 }

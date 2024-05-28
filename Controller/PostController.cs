@@ -2,6 +2,7 @@
 using ThreadShare.DTOs.Entites;
 using ThreadShare.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Controllers.Posts
 {
@@ -28,8 +29,7 @@ namespace Controllers.Posts
 
         // POST: /Post/Create
         // Only respond to POST
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken, HttpPost, Authorize]
         public async Task<IActionResult> Create(IFormCollection formCollection)
         {
             string title = formCollection["Title"];
@@ -64,7 +64,7 @@ namespace Controllers.Posts
             return Redirect("~/");
         }
 
-        // GET: /Post/Details/5
+        // GET: /Post/Details/2
         public async Task<IActionResult> Details(int id)
         {
             var post = await _postService.GetPostById(id);
@@ -79,6 +79,7 @@ namespace Controllers.Posts
                 Post = post,
                 Forum = forum
             };
+
             return View(viewModel);
         }
     }
