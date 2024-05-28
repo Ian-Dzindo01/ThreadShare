@@ -26,13 +26,17 @@ builder.Services.AddAuthentication().AddGoogle(googleOptions =>
     googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"];
 });
 
+
+// Myb change these 
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IForumRepository, ForumRepository>();
 builder.Services.AddScoped<IRepository<Comment>, CommentRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IForumService, ForumService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 //builder.Services.AddAuthentication();
 

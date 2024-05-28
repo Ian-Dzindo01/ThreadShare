@@ -10,11 +10,14 @@ namespace Controllers.Posts
     {
         private readonly IPostService _postService;
         private readonly IForumService _forumService;
+        private readonly IUserService _userService;
 
-        public PostController(IPostService postService, IForumService forumService)
+        public PostController(IPostService postService, IForumService forumService,
+                              IUserService userService)
         {
             _postService = postService;
             _forumService = forumService;
+            _userService = userService;
         }
 
         // GET: /Post/Create
@@ -72,12 +75,15 @@ namespace Controllers.Posts
             {
                 return NotFound();
             }
+
+            var user = await _userService.GetUserById(post.UserId);
             var forum = await _forumService.GetForumById(post.ForumId);
 
             var viewModel = new PostDetailsViewModel
             {
                 Post = post,
-                Forum = forum
+                Forum = forum,
+                Username = user.Username
             };
 
             return View(viewModel);
