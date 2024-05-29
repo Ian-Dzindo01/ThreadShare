@@ -8,3 +8,23 @@
 <p>@Model.Post.Body</p>
 <p><strong>Forum:</strong> @Model.Forum.Name</p>
 <p><strong>Posted by:</strong> @Model.Username</p>
+
+<h2>Comments</h2>
+@foreach (var comment in Model.Comments)
+{
+    <div class="comment">
+        <p>@comment.Body</p>
+        <p><strong>Posted by:</strong> @comment.User.UserName on @comment.DateCreated.ToString("g")</p>
+    </div>
+}
+
+<h2>Add a Comment</h2>
+<form asp-action="CreateComment" method="post">
+    <div class="form-group">
+        <label for="Body">Comment</label>
+        <textarea class="form-control" id="Body" name="Body" rows="3"></textarea>
+    </div>
+    <input type="hidden" name="ForumId" value="@Model.Forum.Id" />
+    <input type="hidden" name="PostId" value="@Model.Post.Id" />
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
