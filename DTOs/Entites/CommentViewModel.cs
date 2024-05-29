@@ -9,6 +9,5 @@
         public int PostId { get; set; }
 
         public int ForumId { get; set; }
-
     }
 }

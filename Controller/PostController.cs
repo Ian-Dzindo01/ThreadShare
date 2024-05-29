@@ -11,13 +11,15 @@ namespace Controllers.Posts
         private readonly IPostService _postService;
         private readonly IForumService _forumService;
         private readonly IUserService _userService;
+        private readonly ICommentService _commentService;
 
         public PostController(IPostService postService, IForumService forumService,
-                              IUserService userService)
+                              IUserService userService, ICommentService commentService)
         {
             _postService = postService;
             _forumService = forumService;
             _userService = userService;
+            _commentService = commentService;
         }
 
         // GET: /Post/Create
@@ -78,11 +80,13 @@ namespace Controllers.Posts
 
             var user = await _userService.GetUserById(post.UserId);
             var forum = await _forumService.GetForumById(post.ForumId);
+            var comments = await _commentService.GetCommentsForPost(post.Id);
 
             var viewModel = new PostDetailsViewModel
             {
                 Post = post,
                 Forum = forum,
+                Comments = comments,
                 Username = user.Username
             };
 

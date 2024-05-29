@@ -9,9 +9,9 @@ namespace ThreadShare.Service.Implementations
 {
     public class CommentService : ICommentService
     {
-        private readonly IRepository<Comment> _commentRepository;
+        private readonly ICommentRepository _commentRepository;
 
-        public CommentService(IRepository<Comment> commentRepository)
+        public CommentService(ICommentRepository commentRepository)
         {
             _commentRepository = commentRepository;
         }
@@ -53,6 +53,11 @@ namespace ThreadShare.Service.Implementations
         public async Task<Comment> GetCommentById(int commentId)
         {
             return await _commentRepository.GetById(commentId);
+        }
+
+        public async Task<List<Comment>> GetCommentsForPost(int postId)
+        {
+            return await _commentRepository.GetCommentsForPost(postId);
         }
     }
 }

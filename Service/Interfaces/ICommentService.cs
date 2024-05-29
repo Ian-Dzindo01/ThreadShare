@@ -9,5 +9,6 @@ namespace ThreadShare.Service.Interfaces
         public Task UpdateComment(CommentViewModel model, int commentId);
         public Task DeleteComment(int commentId);
         public Task<Comment> GetCommentById(int commentId);
+        public Task<List<Comment>> GetCommentsForPost(int postId);
     }
 }

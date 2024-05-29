@@ -8,5 +8,6 @@ namespace ThreadShare.Repository.Interfaces
         public Task Add(Comment comment);
         public Task Delete(int id);
         public Task Update(Comment comment);
+        public Task<List<Comment>> GetCommentsForPost(int id);
     }
 }

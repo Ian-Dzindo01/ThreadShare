@@ -5,7 +5,7 @@ using ThreadShare.Repository.Interfaces;
 
 namespace ThreadShare.Repository.Implementations
 {
-    public class CommentRepository :IRepository<Comment>
+    public class CommentRepository : ICommentRepository
     {
         private readonly AppDbContext _dbContext;
 
@@ -39,6 +39,13 @@ namespace ThreadShare.Repository.Implementations
         public async Task<Comment> GetById(int commentId)
         {
             return await _dbContext.Comments.FindAsync(commentId);
+        }
+
+        public async Task<List<Comment>> GetCommentsForPost(int postId)
+        {
+            return await _dbContext.Comments
+                                   .Where(c => c.PostId == postId)
+                                   .ToListAsync();
         }
 
         public async Task<bool> InstanceExists(int id)

@@ -40,7 +40,6 @@
 
   <ItemGroup>
     <Folder Include="Validation\" />
-    <Folder Include="Views\Comment\" />
   </ItemGroup>
 
 </Project>

@@ -22,42 +22,22 @@ namespace Controllers.Comments
             _userService = userService;
             _commentService = commentService;
         }
-
-        // GET: /Post/Create
-        public async Task<IActionResult> Create()
+        //// GET: /Post/Create
+        [HttpGet]
+        public async Task<IActionResult> Create(int postId, int forumId)
         {
-            var forums = await _forumService.GetAllForums();
-
-            ViewBag.Forums = forums;
+            ViewData["PostId"] = postId;
+            ViewData["ForumId"] = forumId;
 
             return View();
         }
 
-        // POST: /Post/Create
-        // Only respond to POST
         [ValidateAntiForgeryToken, HttpPost, Authorize]
-        public async Task<IActionResult> Create(IFormCollection formCollection)
+        public async Task<IActionResult> Create(string body, int forumId, int postId)
         {
-            string body = formCollection["Body"];
-            string forumIdStr = formCollection["ForumName"];
-            string postIdStr = formCollection["PostName"];
-
-            if (string.IsNullOrEmpty(forumIdStr) || !int.TryParse(forumIdStr, out int forumId))
-            {
-                ModelState.AddModelError("ForumId", "Invalid Forum ID");
-                return View();
-            }
-
-            if (string.IsNullOrEmpty(forumIdStr) || !int.TryParse(forumIdStr, out int postId))
-            {
-                ModelState.AddModelError("ForumId", "Invalid Forum ID");
-                return View();
-            }
-
-
             if (string.IsNullOrWhiteSpace(body))
             {
-                ModelState.AddModelError("", "Both Title and Body are required");
+                ModelState.AddModelError("", "Comment body is required");
                 return View();
             }
 
@@ -67,35 +47,13 @@ namespace Controllers.Comments
             {
                 Body = body,
                 UserId = userId,
-                ForumId = forumId
+                ForumId = forumId,
+                PostId = postId
             };
 
             await _commentService.CreateComment(commentViewModel);
 
-            // Redirect back to the post here!
-            return Redirect("~/");
-        }
-
-        // GET: /Post/Details/2
-        public async Task<IActionResult> Details(int id)
-        {
-            var post = await _postService.GetPostById(id);
-            if (post == null)
-            {
-                return NotFound();
-            }
-
-            var user = await _userService.GetUserById(post.UserId);
-            var forum = await _forumService.GetForumById(post.ForumId);
-
-            var viewModel = new PostDetailsViewModel
-            {
-                Post = post,
-                Forum = forum,
-                Username = user.Username
-            };
-
-            return View(viewModel);
+            return RedirectToAction("Details", "Post", new { id = postId });
         }
     }
 }
