@@ -23,6 +23,12 @@ namespace ThreadShare.Models
         // One to many relationship with Post class
         public ICollection<Post> Posts { get; set; }
 
+        public string RefreshToken { get; set; } = string.Empty;
+
+        public DateTime TokenCreated { get; set; }
+
+        public DateTime TokenExpires { get; set; }
+
         public User()
         {
             DateJoined = DateTime.UtcNow;
