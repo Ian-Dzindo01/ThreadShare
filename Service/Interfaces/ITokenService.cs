@@ -9,5 +9,6 @@ namespace ThreadShare.Service.Interfaces
     public interface ITokenService
     {
         string CreateToken(User user);
+        public RefreshToken GenerateRefreshToken();
     }
 }

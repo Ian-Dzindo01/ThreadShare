@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using ThreadShare.Models;
 using ThreadShare.Service.Interfaces;
+using System.Security.Cryptography;
 
 namespace ThreadShare.Service.Implementations
 {
@@ -34,7 +35,7 @@ namespace ThreadShare.Service.Implementations
             {
                 // Wallet
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddDays(7),
+                Expires = DateTime.Now.AddHours(1),
                 SigningCredentials = creds,
                 Issuer = _config["JWT:Issuer"],
                 Audience = _config["JWT:Audience"]
@@ -45,6 +46,17 @@ namespace ThreadShare.Service.Implementations
 
             // String representation
             return tokenHandler.WriteToken(token);
+        }
+
+        public RefreshToken GenerateRefreshToken()
+        {
+            var refreshToken = new RefreshToken
+            {
+                Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+                Expires = DateTime.Now.AddDays(7)
+            };
+
+            return refreshToken;
         }
     }
 }

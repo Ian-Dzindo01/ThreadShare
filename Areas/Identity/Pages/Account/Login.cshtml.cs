@@ -2,23 +2,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
 using ThreadShare.Models;
-using ThreadShare.DTOs;
 using ThreadShare.DTOs.Account;
-using NuGet.Common;
 using ThreadShare.Service.Interfaces;
+using System.Security.Claims;
 
 namespace ThreadShare.Areas.Identity.Pages.Account
 {
@@ -116,6 +108,22 @@ namespace ThreadShare.Areas.Identity.Pages.Account
             ReturnUrl = returnUrl;
         }
 
+        private async void SetRefreshToken(RefreshToken newRefreshToken)
+        {
+            var user = await _userManager.FindByEmailAsync(Input.Email);
+
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = newRefreshToken.Expires,
+            };
+
+            Response.Cookies.Append("refreshToken", newRefreshToken.Token, cookieOptions);
+            user.RefreshToken = newRefreshToken.Token;
+            user.TokenCreated = newRefreshToken.Created;
+            user.TokenExpires = newRefreshToken.Expires;
+        }
+
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
@@ -140,6 +148,9 @@ namespace ThreadShare.Areas.Identity.Pages.Account
                             Email = user.Email,
                             Token = _tokenService.CreateToken(user)
                         };
+
+                        var refreshToken = _tokenService.GenerateRefreshToken();
+                        SetRefreshToken(refreshToken);
 
                         // JWT here. Use HTTP Authorization header for transfer and storage.
                         Response.Headers.Add("Authorization", "Bearer " + UserDTO.Token);
