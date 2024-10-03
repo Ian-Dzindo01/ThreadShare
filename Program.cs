@@ -9,6 +9,7 @@ using ThreadShare.Repository.Implementations;
 using ThreadShare.Repository.Interfaces;
 using ThreadShare.Service.Implementations;
 using ThreadShare.Service.Interfaces;
+using Microsoft.OpenApi.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,6 +45,12 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen( c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+});
+
 //Validate signing keys
 builder.Services.AddAuthentication().AddJwtBearer(options =>
 {
@@ -56,6 +63,16 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
     };
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
+
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.Password.RequireUppercase = false;
@@ -63,18 +80,30 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "MyAPI V1");
+    });
+}
+else
 {
     app.UseExceptionHandler("/Error");
-    app.UseHsts();  
+    app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAll");
 
 app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
@@ -84,5 +113,7 @@ app.UseEndpoints(endpoints =>
         pattern: "{controller=Home}/{action=Index}/{id?}");
     endpoints.MapRazorPages();
 });
+
+app.MapRazorPages();
 
 app.Run();
