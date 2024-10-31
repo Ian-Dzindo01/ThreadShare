@@ -28,6 +28,16 @@ namespace ThreadShare.Data
                 .HasOne(p => p.Post)
                 .WithMany(f => f.Comments)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Post>()
+                .Property(p => p.UpdatedAt)
+                .ValueGeneratedOnAddOrUpdate()
+                .HasDefaultValueSql("NOW()");
+
+            modelBuilder.Entity<Forum>()
+                .Property(f => f.UpdatedAt)
+                .ValueGeneratedOnAddOrUpdate()
+                .HasDefaultValueSql("NOW()");
         }
     }
 }
