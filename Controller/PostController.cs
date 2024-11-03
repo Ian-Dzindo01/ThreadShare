@@ -87,7 +87,7 @@ namespace Controllers.Posts
                 Post = post,
                 Forum = forum,
                 Comments = comments,
-                Username = user.Username
+                Username = user.UserName
             };
 
             return View(viewModel);

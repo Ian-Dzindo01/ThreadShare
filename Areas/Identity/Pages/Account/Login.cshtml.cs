@@ -144,7 +144,7 @@ namespace ThreadShare.Areas.Identity.Pages.Account
                         // Only using the Token for now
                         NewUserDTO UserDTO = new NewUserDTO
                         {
-                            UserName = user.Username,
+                            UserName = user.UserName,
                             Email = user.Email,
                             Token = _tokenService.CreateToken(user)
                         };

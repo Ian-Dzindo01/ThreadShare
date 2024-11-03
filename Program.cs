@@ -87,7 +87,7 @@ async Task CreateRoles(IServiceProvider serviceProvider)
     {
         adminUser = new User
         {
-            Username = adminEmail,
+            UserName = adminEmail,
             Email = adminEmail,
             Name = "Admin",
             Surname = "User",
@@ -98,7 +98,7 @@ async Task CreateRoles(IServiceProvider serviceProvider)
             TokenExpires = DateTime.UtcNow.AddDays(7)
         };
 
-        var result = await userManager.CreateAsync(adminUser, "AdminPassword123!");
+        var result = await userManager.CreateAsync(adminUser, configuration["Authentication:Passwords:AdminPass"]);
 
         if (result.Succeeded)
         {

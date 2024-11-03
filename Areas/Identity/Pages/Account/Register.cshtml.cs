@@ -144,7 +144,7 @@ namespace ThreadShare.Areas.Identity.Pages.Account
                 // ADD NEW FIELDS HERE. HAVE TO IMPLEMENT THE CHANGE IN 3 SPOTS.
                 user.Name = Input.Name;
                 user.Surname = Input.Surname;
-                user.Username = Input.Username;
+                user.UserName = Input.Username;
 
                 // Why are we setting UserName to Email here?
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
@@ -174,7 +174,7 @@ namespace ThreadShare.Areas.Identity.Pages.Account
                         // Just the token for now
                         NewUserDTO UserDTO = new NewUserDTO
                         {
-                            UserName = user.Username,
+                            UserName = user.UserName,
                             Email = user.Email,
                             Token = _tokenService.CreateToken(user)
                         };

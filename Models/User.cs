@@ -15,9 +15,6 @@ namespace ThreadShare.Models
         [Column(TypeName = "varchar(100)")]
         public string Surname { get; set; }
 
-        [Column(TypeName = "varchar(100)")]
-        public string Username { get; set; }
-
         public DateTime DateJoined { get; set; }
 
         // One to many relationship with Post class
