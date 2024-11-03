@@ -12,8 +12,8 @@ using ThreadShare.Data;
 namespace ThreadShare.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241031171739_Fix UpdatedAt for Posts and Forums")]
-    partial class FixUpdatedAtforPostsandForums
+    [Migration("20241102105449_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

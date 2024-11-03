@@ -16,7 +16,7 @@ var configuration = builder.Configuration;
 
 builder.Services.AddRazorPages();
 
-builder.Services.AddDbContext<AppDbContext>(options=>options.UseNpgsql
+builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql
                 (configuration.GetConnectionString("DbConnectionString")));
 
 builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -56,17 +56,12 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
     };
 });
 
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    options.Password.RequireUppercase = false;
-});
-
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    app.UseHsts();  
+    app.UseHsts();
 }
 
 app.UseHttpsRedirection();

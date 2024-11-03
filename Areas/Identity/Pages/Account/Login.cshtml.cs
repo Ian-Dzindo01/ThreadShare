@@ -152,8 +152,14 @@ namespace ThreadShare.Areas.Identity.Pages.Account
                         var refreshToken = _tokenService.GenerateRefreshToken();
                         SetRefreshToken(refreshToken);
 
-                        // JWT here. Use HTTP Authorization header for transfer and storage.
-                        Response.Headers.Add("Authorization", "Bearer " + UserDTO.Token);
+                        Response.Cookies.Append("AuthToken", UserDTO.Token, new CookieOptions
+                        {
+                            HttpOnly = true, // inaccessible to JavaScript for security
+                            Secure = true,   // cookie is sent only over HTTPS (set to false for local testing if needed)
+                            SameSite = SameSiteMode.Lax, // cookie sent with cross-site requests
+                            Expires = DateTimeOffset.UtcNow.AddHours(1)
+                        });
+
                         _logger.LogInformation("User logged in.");
                         return LocalRedirect(returnUrl);
                     }
