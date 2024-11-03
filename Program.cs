@@ -45,7 +45,7 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 
 
 builder.Services.AddControllersWithViews();
-    
+
 builder.Services.AddAuthentication().AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -59,29 +59,28 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
 
 var app = builder.Build();
 
-async Task CreateRoles(IServiceProvider serviceProvider)
+async Task CreateRoles(IServiceProvider serviceProvider, ILogger logger)
 {
     var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
-
     string[] roleNames = { "Administrator", "User" };
 
     foreach (var roleName in roleNames)
     {
         var roleExists = await roleManager.RoleExistsAsync(roleName);
-        Console.WriteLine($"Checking if role exists: {roleName} - Exists: {roleExists}");
+        logger.LogInformation("Checking if role exists: {Role} - Exists: {Exists}", roleName, roleExists);
 
         if (!roleExists)
         {
-            Console.WriteLine($"Creating role: {roleName}");
+            logger.LogInformation("Creating role: {Role}", roleName);
             await roleManager.CreateAsync(new IdentityRole(roleName));
         }
     }
 
-    var adminEmail = "adminaza@gmail.com";
+    var adminEmail = configuration["Admin:AdminMail"];
     var adminUser = await userManager.FindByEmailAsync(adminEmail);
 
-    Console.WriteLine($"Checking if admin user exists: {adminEmail} - Exists: {adminUser != null}");
+    logger.LogInformation("Checking if admin user exists: {Email} - Exists: {Exists}", adminEmail, adminUser != null);
 
     if (adminUser == null)
     {
@@ -92,22 +91,19 @@ async Task CreateRoles(IServiceProvider serviceProvider)
             Name = "Admin",
             Surname = "User",
             DateJoined = DateTime.UtcNow,
-            EmailConfirmed = true,
-            RefreshToken = string.Empty,
-            TokenCreated = DateTime.UtcNow,
-            TokenExpires = DateTime.UtcNow.AddDays(7)
+            EmailConfirmed = true
         };
 
-        var result = await userManager.CreateAsync(adminUser, configuration["Authentication:Passwords:AdminPass"]);
+        var result = await userManager.CreateAsync(adminUser, configuration["Admin:AdminPass"]);
 
         if (result.Succeeded)
         {
-            Console.WriteLine("Admin user created successfully.");
+            logger.LogInformation("Admin user created successfully.");
             await userManager.AddToRoleAsync(adminUser, "Administrator");
         }
         else
         {
-            Console.WriteLine($"Error creating admin user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            logger.LogError("Error creating admin user: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
         }
     }
 }
@@ -119,7 +115,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 
 app.UseRouting();
@@ -138,7 +133,8 @@ app.UseEndpoints(endpoints =>
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    await CreateRoles(services);
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    await CreateRoles(services, logger);
 }
 
 app.Run();

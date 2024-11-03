@@ -141,12 +141,10 @@ namespace ThreadShare.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
-                // ADD NEW FIELDS HERE. HAVE TO IMPLEMENT THE CHANGE IN 3 SPOTS.
                 user.Name = Input.Name;
                 user.Surname = Input.Surname;
                 user.UserName = Input.Username;
 
-                // Why are we setting UserName to Email here?
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
@@ -156,6 +154,7 @@ namespace ThreadShare.Areas.Identity.Pages.Account
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
                     var callbackUrl = Url.Page(
                         "/Account/ConfirmEmail",
                         pageHandler: null,
