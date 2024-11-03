@@ -23,7 +23,7 @@ namespace Controllers.Forums
         }
 
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Create(IFormCollection formCollection)
         {
             string name = formCollection["Name"];
