@@ -10,7 +10,6 @@ namespace ThreadShare.Service.Implementations
 {
     public class TokenService : ITokenService
     {
-        // Encrypt in specific way to our server
         private readonly IConfiguration _config;
         private readonly SymmetricSecurityKey _key;
 
@@ -30,10 +29,8 @@ namespace ThreadShare.Service.Implementations
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
 
-            // Creation handled by .NET 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                // Wallet
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.Now.AddHours(1),
                 SigningCredentials = creds,
@@ -44,7 +41,6 @@ namespace ThreadShare.Service.Implementations
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            // String representation
             return tokenHandler.WriteToken(token);
         }
 
