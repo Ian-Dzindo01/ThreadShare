@@ -31,7 +31,6 @@ builder.Services.AddAuthentication().AddGoogle(googleOptions =>
 });
 
 
-// Change these
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IForumRepository, ForumRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
@@ -41,7 +40,7 @@ builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IForumService, ForumService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddSingleton<ITokenService, TokenService>();
 
 
 builder.Services.AddControllersWithViews();
