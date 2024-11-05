@@ -21,7 +21,7 @@ namespace ThreadShare.Areas.Identity.Pages.Account
         private readonly ILogger<LoginModel> _logger;
         private readonly ITokenService _tokenService;
 
-        public LoginModel(SignInManager<User> signInManager, UserManager<User> userManager, 
+        public LoginModel(SignInManager<User> signInManager, UserManager<User> userManager,
                           ILogger<LoginModel> logger, ITokenService tokenService)
         {
             _signInManager = signInManager;
@@ -140,7 +140,7 @@ namespace ThreadShare.Areas.Identity.Pages.Account
                     var user = await _userManager.FindByEmailAsync(Input.Email);
                     // Remove this
                     if (user != null)
-                    {   
+                    {
                         // Only using the Token for now
                         NewUserDTO UserDTO = new NewUserDTO
                         {

@@ -4,6 +4,13 @@ using ThreadShare.Models;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text.Encodings.Web;
+using System.Text;
+using ThreadShare.DTOs.Account;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace ThreadShare.Controllers
 {
@@ -11,55 +18,106 @@ namespace ThreadShare.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
+        private readonly UserManager<User> _userManager;
+        private readonly IUserStore<User> _userStore;
+        private readonly IUserEmailStore<User> _emailStore;
+        private readonly SignInManager<User> _signInManager;
+        private readonly ILogger<AuthController> _logger;
+        private readonly IEmailSender _emailSender;
         private readonly ITokenService _tokenService;
-        private readonly IUserService _userService;
 
-        public AuthController(ITokenService tokenService, IUserService userService, UserManager<User> userManager)
+        public AuthController(
+            UserManager<User> userManager,
+            IUserStore<User> userStore,
+            SignInManager<User> signInManager,
+            ILogger<AuthController> logger,
+            IEmailSender emailSender,
+            ITokenService tokenService)
         {
+            _userManager = userManager;
+            _userStore = userStore;
+            _emailStore = GetEmailStore();
+            _signInManager = signInManager;
+            _logger = logger;
+            _emailSender = emailSender;
             _tokenService = tokenService;
-            _userService = userService;
         }
 
-        [HttpPost("refresh-token")]
-        public async Task<ActionResult<string>> RefreshToken()
+
+        [HttpPost("register")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(NewUserDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Register([FromBody] RegisterInputModel model)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (userIdClaim == null)
+            var user = CreateUser();
+            user.Name = model.Name;
+            user.Surname = model.Surname;
+            user.UserName = model.Username;
+
+            await _userStore.SetUserNameAsync(user, model.Email, CancellationToken.None);
+            await _emailStore.SetEmailAsync(user, model.Email, CancellationToken.None);
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (!result.Succeeded)
             {
-                return Unauthorized("User is not authenticated.");
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return BadRequest(ModelState);
             }
 
-            var user = await _userService.GetUserById(userIdClaim);
-            var refreshToken = Request.Cookies["refreshToken"];
+            var userId = await _userManager.GetUserIdAsync(user);
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
-            if (!user.RefreshToken.Equals(refreshToken))
+            var callbackUrl = Url.Page(
+                "/Account/ConfirmEmail",
+                pageHandler: null,
+                values: new { area = "Identity", userId = userId, code = code },
+                protocol: Request.Scheme);
+
+            await _emailSender.SendEmailAsync(model.Email, "Confirm your email",
+                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+            NewUserDTO userDTO = new NewUserDTO
             {
-
-                return Unauthorized("Invalid Refresh Token");
-            }
-
-            else if (user.TokenExpires < DateTime.UtcNow) 
-            {
-                return Unauthorized("Refresh Token Expired");
-            }
-
-            string token = _tokenService.CreateToken(user);
-            var newRefreshToken = _tokenService.GenerateRefreshToken();
-
-            // Set refresh token
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                Expires = newRefreshToken.Expires,
+                UserName = user.UserName,
+                Email = user.Email,
+                Token = _tokenService.CreateToken(user)
             };
 
-            Response.Cookies.Append("refreshToken", newRefreshToken.Token, cookieOptions);
-            user.RefreshToken = newRefreshToken.Token;
-            user.TokenCreated = newRefreshToken.Created;
-            user.TokenExpires = newRefreshToken.Expires;
+            if (!_userManager.Options.SignIn.RequireConfirmedAccount)
+            {
+                await _signInManager.SignInAsync(user, isPersistent: false);
+            }
 
-            return Ok(token);
+            return Ok(userDTO);
+        }
+
+        private User CreateUser()
+        {
+            try
+            {
+                return Activator.CreateInstance<User>();
+            }
+            catch
+            {
+                throw new InvalidOperationException($"Can't create an instance of '{nameof(User)}'. " +
+                    $"Ensure that '{nameof(User)}' is not an abstract class and has a parameterless constructor.");
+            }
+        }
+
+        private IUserEmailStore<User> GetEmailStore()
+        {
+            if (!_userManager.SupportsUserEmail)
+            {
+                throw new NotSupportedException("The default UI requires a user store with email support.");
+            }
+            return (IUserEmailStore<User>)_userStore;
         }
     }
 }

@@ -24,8 +24,6 @@ using ThreadShare.Service.Interfaces;
 
 namespace ThreadShare.Areas.Identity.Pages.Account
 {
-    //[ApiController]
-    //[Route("api/[controller]")]
     public class RegisterModel : PageModel
     {
         private readonly SignInManager<User> _signInManager;
@@ -136,82 +134,45 @@ namespace ThreadShare.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
-        /// <summary>
-        /// Registers a new user.
-        /// </summary>
-        /// <param name="returnUrl">The return URL after registration.</param>
-        /// <returns>The registration result as an IActionResult.</returns>
-        /// <response code="200">Returns the user if registration is successful</response>
-        /// <response code="400">If the registration fails due to validation errors</response>
-        /// <response code="403">If the user is not authorized</response>
-        [HttpPost]
-        [AllowAnonymous]
-        [ProducesResponseType(typeof(NewUserDTO), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+        public async Task<IActionResult> OnPostAsync()
         {
-            returnUrl ??= Url.Content("~/");
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var user = CreateUser();
-                user.Name = Input.Name;
-                user.Surname = Input.Surname;
-                user.UserName = Input.Username;
-
-                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
-                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                var result = await _userManager.CreateAsync(user, Input.Password);
-
-                if (result.Succeeded)
-                {
-                    var userId = await _userManager.GetUserIdAsync(user);
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-
-                    var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
-                        protocol: Request.Scheme);
-
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                    {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
-                    }
-                    else
-                    {
-                        NewUserDTO UserDTO = new NewUserDTO
-                        {
-                            UserName = user.UserName,
-                            Email = user.Email,
-                            Token = _tokenService.CreateToken(user)
-                        };
-
-                        Response.Cookies.Append("AuthToken", UserDTO.Token, new CookieOptions
-                        {
-                            HttpOnly = true, // inaccessible to JavaScript for security
-                            Secure = true,   // cookie is sent only over HTTPS (set to false for local testing if needed)
-                            SameSite = SameSiteMode.Lax, // cookie sent with cross-site requests
-                            Expires = DateTimeOffset.UtcNow.AddHours(1)
-                        });
-
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
-                    }
-                }
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
+                return Page();
             }
 
-            // If we got this far, something failed, redisplay form
-            return Page();
+            var registerData = new
+            {
+                Name = Input.Name,
+                Surname = Input.Surname,
+                Username = Input.Username,
+                Email = Input.Email,
+                Password = Input.Password,
+                ConfirmPassword = Input.ConfirmPassword
+            };
+
+            using (var client = new HttpClient())
+            {
+                var apiUrl = "https://localhost:7261/api/auth/register"; 
+                client.BaseAddress = new Uri(apiUrl);
+                // Remove previous Accept headers that might affect workflow
+                client.DefaultRequestHeaders.Accept.Clear();
+                // Expect JSON response type
+                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+                var response = await client.PostAsJsonAsync(apiUrl, registerData);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToPage("/Account/RegisterConfirmation", new { email = Input.Email });
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    ModelState.AddModelError(string.Empty, "Registration failed: " + errorContent);
+                    return Page();
+                }
+            }
         }
 
         private User CreateUser()
