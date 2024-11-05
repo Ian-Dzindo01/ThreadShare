@@ -11,6 +11,7 @@ using System.Text.Encodings.Web;
 using System.Text;
 using ThreadShare.DTOs.Account;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using ThreadShare.Service.Implementations;
 
 namespace ThreadShare.Controllers
 {
@@ -20,6 +21,7 @@ namespace ThreadShare.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly IUserStore<User> _userStore;
+        private readonly IUserService _userService;
         private readonly IUserEmailStore<User> _emailStore;
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger<AuthController> _logger;
@@ -96,6 +98,48 @@ namespace ThreadShare.Controllers
             }
 
             return Ok(userDTO);
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<ActionResult<string>> RefreshToken()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User is not authenticated.");
+            }
+
+            var user = await _userService.GetUserById(userIdClaim);
+            var refreshToken = Request.Cookies["refreshToken"];
+
+            if (!user.RefreshToken.Equals(refreshToken))
+            {
+
+                return Unauthorized("Invalid Refresh Token");
+            }
+
+            else if (user.TokenExpires < DateTime.UtcNow)
+            {
+                return Unauthorized("Refresh Token Expired");
+            }
+
+            string token = _tokenService.CreateToken(user);
+            var newRefreshToken = _tokenService.GenerateRefreshToken();
+
+            // Set refresh token
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = newRefreshToken.Expires,
+            };
+
+            Response.Cookies.Append("refreshToken", newRefreshToken.Token, cookieOptions);
+            user.RefreshToken = newRefreshToken.Token;
+            user.TokenCreated = newRefreshToken.Created;
+            user.TokenExpires = newRefreshToken.Expires;
+
+            return Ok(token);
         }
 
         private User CreateUser()
