@@ -3,10 +3,13 @@ using ThreadShare.DTOs.Entites;
 using ThreadShare.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
 
-namespace Controllers.Posts
+namespace ThreadShare.Controllers
 {
-    public class PostController : Controller
+    [ApiController]
+    [Route("api/[controller]")]
+    public class PostController : ControllerBase
     {
         private readonly IPostService _postService;
         private readonly IForumService _forumService;
@@ -22,54 +25,34 @@ namespace Controllers.Posts
             _commentService = commentService;
         }
 
-        // GET: /Post/Create
-        public async Task<IActionResult> Create()
+        /// <summary>
+        /// Creates a new post.
+        /// </summary>
+        /// <param name="postViewModel">The post details.</param>
+        /// <returns>Returns a redirect to the homepage if successful.</returns>
+        [HttpPost("create")]
+        [Authorize]
+        public async Task<IActionResult> Create([FromBody] PostViewModel postViewModel)
         {
-            var forums = await _forumService.GetAllForums();
-
-            ViewBag.Forums = forums;
-
-            return View();
-        }
-
-        // POST: /Post/Create
-        // Only respond to POST
-        [ValidateAntiForgeryToken, HttpPost, Authorize]
-        public async Task<IActionResult> Create(IFormCollection formCollection)
-        {
-            string title = formCollection["Title"];
-            string body = formCollection["Body"];
-            string forumIdStr = formCollection["ForumName"];
-
-            Console.WriteLine(forumIdStr);
-
-            if (string.IsNullOrEmpty(forumIdStr) || !int.TryParse(forumIdStr, out int forumId))
+            if (postViewModel == null || string.IsNullOrWhiteSpace(postViewModel.Title) || string.IsNullOrWhiteSpace(postViewModel.Body))
             {
-                ModelState.AddModelError("ForumId", "Invalid Forum ID");
-                return View();
-            }
-
-            if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(body))
-            {
-                ModelState.AddModelError("", "Both Title and Body are required");
-                return View();
+                return BadRequest("Both Title and Body are required.");
             }
 
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            PostViewModel postViewModel = new PostViewModel
-            {
-                Title = title,
-                Body = body,
-                UserId = userId,
-                ForumId = forumId
-            };
+            postViewModel.UserId = userId;
 
             await _postService.CreatePost(postViewModel);
-            return Redirect("~/");
+
+            return Ok("Post created successfully.");
         }
 
-        // GET: /Post/Details/2
+        /// <summary>
+        /// Gets the details of a post by ID.
+        /// </summary>
+        /// <param name="id">The ID of the post.</param>
+        /// <returns>Returns the post details.</returns>
+        [HttpGet("details/{id}")]
         public async Task<IActionResult> Details(int id)
         {
             var post = await _postService.GetPostById(id);
@@ -90,7 +73,7 @@ namespace Controllers.Posts
                 Username = user.UserName
             };
 
-            return View(viewModel);
+            return Ok(viewModel);
         }
     }
 }

@@ -39,7 +39,7 @@ namespace ThreadShare.Controllers
                 return Unauthorized("Invalid Refresh Token");
             }
 
-            else if (user.TokenExpires < DateTime.UtcNow)
+            else if (user.TokenExpires < DateTime.UtcNow) 
             {
                 return Unauthorized("Refresh Token Expired");
             }

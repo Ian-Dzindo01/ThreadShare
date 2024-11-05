@@ -24,6 +24,8 @@ using ThreadShare.Service.Interfaces;
 
 namespace ThreadShare.Areas.Identity.Pages.Account
 {
+    //[ApiController]
+    //[Route("api/[controller]")]
     public class RegisterModel : PageModel
     {
         private readonly SignInManager<User> _signInManager;
@@ -134,6 +136,19 @@ namespace ThreadShare.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
+        /// <summary>
+        /// Registers a new user.
+        /// </summary>
+        /// <param name="returnUrl">The return URL after registration.</param>
+        /// <returns>The registration result as an IActionResult.</returns>
+        /// <response code="200">Returns the user if registration is successful</response>
+        /// <response code="400">If the registration fails due to validation errors</response>
+        /// <response code="403">If the user is not authorized</response>
+        [HttpPost]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(NewUserDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
@@ -170,7 +185,6 @@ namespace ThreadShare.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        // Just the token for now
                         NewUserDTO UserDTO = new NewUserDTO
                         {
                             UserName = user.UserName,

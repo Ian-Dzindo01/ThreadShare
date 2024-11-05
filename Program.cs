@@ -14,6 +14,9 @@ using ThreadShare.Service.Interfaces;
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql
@@ -105,6 +108,16 @@ async Task CreateRoles(IServiceProvider serviceProvider, ILogger logger)
             logger.LogError("Error creating admin user: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
         }
     }
+}
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+        c.RoutePrefix = string.Empty; // Sets Swagger UI to the app's root
+    });
 }
 
 if (!app.Environment.IsDevelopment())
