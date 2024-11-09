@@ -3,13 +3,13 @@ using ThreadShare.DTOs.Entites;
 using ThreadShare.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
+using ThreadShare.Models;
 
 namespace ThreadShare.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class PostController : ControllerBase
+    public class PostController : Controller
     {
         private readonly IPostService _postService;
         private readonly IForumService _forumService;
@@ -24,6 +24,8 @@ namespace ThreadShare.Controllers
             _userService = userService;
             _commentService = commentService;
         }
+
+
 
         /// <summary>
         /// Creates a new post.
@@ -47,6 +49,28 @@ namespace ThreadShare.Controllers
             return Ok("Post created successfully.");
         }
 
+        [HttpGet("create")]
+        [Authorize]
+        public async Task<IActionResult> Create()
+        {
+            var forums = await _forumService.GetAllForums();
+            if (forums == null || !forums.Any())
+            {
+                return NotFound("No forums available to post in.");
+            }
+
+            var viewModel = new CreatePostViewModel
+            {
+                Forums = forums.Select(forum => new ForumViewModel
+                {
+                    Name = forum.Name,  
+                    Description = forum.Description
+                }).ToList()
+            };
+
+            return View(viewModel);
+        }
+
         /// <summary>
         /// Gets the details of a post by ID.
         /// </summary>
@@ -62,6 +86,8 @@ namespace ThreadShare.Controllers
             }
 
             var user = await _userService.GetUserById(post.UserId);
+            Console.WriteLine("Retrieving User successful");
+            Console.WriteLine(post.UserId);
             var forum = await _forumService.GetForumById(post.ForumId);
             var comments = await _commentService.GetCommentsForPost(post.Id);
 
@@ -73,7 +99,7 @@ namespace ThreadShare.Controllers
                 Username = user.UserName
             };
 
-            return Ok(viewModel);
+            return View(viewModel);
         }
     }
 }

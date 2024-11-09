@@ -97,7 +97,7 @@ namespace ThreadShare.Controllers
                 await _signInManager.SignInAsync(user, isPersistent: false);
             }
 
-            return Ok(userDTO);
+            return Ok(userDTO); 
         }
 
         [HttpPost("refresh-token")]
@@ -110,6 +110,8 @@ namespace ThreadShare.Controllers
                 return Unauthorized("User is not authenticated.");
             }
 
+            Console.WriteLine(userIdClaim);
+
             var user = await _userService.GetUserById(userIdClaim);
             var refreshToken = Request.Cookies["refreshToken"];
 
@@ -120,7 +122,7 @@ namespace ThreadShare.Controllers
             }
 
             else if (user.TokenExpires < DateTime.UtcNow)
-            {
+            {   
                 return Unauthorized("Refresh Token Expired");
             }
 

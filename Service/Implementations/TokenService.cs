@@ -44,6 +44,7 @@ namespace ThreadShare.Service.Implementations
             return tokenHandler.WriteToken(token);
         }
 
+
         public RefreshToken GenerateRefreshToken()
         {
             var refreshToken = new RefreshToken
