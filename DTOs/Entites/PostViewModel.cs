@@ -9,5 +9,7 @@
         public string UserId { get; set; }
 
         public int ForumId { get; set; }
+
+        public string? ForumName { get; set; }
     }
 }

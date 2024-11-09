@@ -34,19 +34,32 @@ namespace ThreadShare.Controllers
         /// <returns>Returns a redirect to the homepage if successful.</returns>
         [HttpPost("create")]
         [Authorize]
-        public async Task<IActionResult> Create([FromBody] PostViewModel postViewModel)
+        public async Task<IActionResult> Create(string Title, string Body, int ForumId)
         {
-            if (postViewModel == null || string.IsNullOrWhiteSpace(postViewModel.Title) || string.IsNullOrWhiteSpace(postViewModel.Body))
+            if (string.IsNullOrWhiteSpace(Title) || string.IsNullOrWhiteSpace(Body))
             {
                 return BadRequest("Both Title and Body are required.");
             }
 
+            //int? forumId = await _forumService.GetForumIdByName(Title); 
+            //if (forumId == null)
+            //{
+            //    return NotFound("The specified forum does not exist.");
+            //}
+
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            postViewModel.UserId = userId;
+
+            var postViewModel = new PostViewModel
+            {
+                Title = Title,
+                Body = Body,
+                UserId = userId,
+                ForumId = ForumId
+            };
 
             await _postService.CreatePost(postViewModel);
 
-            return Ok("Post created successfully.");
+            return Redirect("~/");
         }
 
         [HttpGet("create")]
@@ -59,16 +72,15 @@ namespace ThreadShare.Controllers
                 return NotFound("No forums available to post in.");
             }
 
-            var viewModel = new CreatePostViewModel
+            ViewBag.Forums = forums.Select(forum => new ForumViewModel
             {
-                Forums = forums.Select(forum => new ForumViewModel
-                {
-                    Name = forum.Name,  
-                    Description = forum.Description
-                }).ToList()
-            };
+                Id = forum.Id,
+                Name = forum.Name,
+                Description = forum.Description,
+                UserId = forum.UserId
+            }).ToList();
 
-            return View(viewModel);
+            return View();
         }
 
         /// <summary>
