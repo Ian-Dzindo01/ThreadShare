@@ -108,8 +108,10 @@ namespace ThreadShare.Areas.Identity.Pages.Account
             ReturnUrl = returnUrl;
         }
 
-        private async void SetRefreshToken(RefreshToken newRefreshToken)
+        private async Task SetRefreshToken(RefreshToken newRefreshToken)
         {
+
+            _logger.LogInformation("SetRefreshToken function called");
             var user = await _userManager.FindByEmailAsync(Input.Email);
 
             var cookieOptions = new CookieOptions
@@ -122,6 +124,15 @@ namespace ThreadShare.Areas.Identity.Pages.Account
             user.RefreshToken = newRefreshToken.Token;
             user.TokenCreated = newRefreshToken.Created;
             user.TokenExpires = newRefreshToken.Expires;
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                throw new Exception("Failed to update refresh token in the database");
+            }
+
+            _logger.LogInformation($"Refresh token updated for user {user.UserName}");
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
@@ -150,7 +161,7 @@ namespace ThreadShare.Areas.Identity.Pages.Account
                         };
 
                         var refreshToken = _tokenService.GenerateRefreshToken();
-                        SetRefreshToken(refreshToken);
+                        await SetRefreshToken(refreshToken);
 
                         Response.Cookies.Append("AuthToken", UserDTO.Token, new CookieOptions
                         {

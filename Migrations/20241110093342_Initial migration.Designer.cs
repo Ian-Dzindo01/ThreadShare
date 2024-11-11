@@ -12,8 +12,8 @@ using ThreadShare.Data;
 namespace ThreadShare.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241102105449_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20241110093342_Initial migration")]
+    partial class Initialmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -377,10 +377,6 @@ namespace ThreadShare.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("varchar(100)");
 
                     b.HasDiscriminator().HasValue("User");
                 });

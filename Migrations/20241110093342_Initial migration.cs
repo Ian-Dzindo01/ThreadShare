@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ThreadShare.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class Initialmigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,7 +34,6 @@ namespace ThreadShare.Migrations
                     Discriminator = table.Column<string>(type: "character varying(13)", maxLength: 13, nullable: false),
                     Name = table.Column<string>(type: "varchar(100)", nullable: true),
                     Surname = table.Column<string>(type: "varchar(100)", nullable: true),
-                    Username = table.Column<string>(type: "varchar(100)", nullable: true),
                     DateJoined = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     RefreshToken = table.Column<string>(type: "text", nullable: true),
                     TokenCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),

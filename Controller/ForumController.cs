@@ -8,13 +8,23 @@ namespace Controllers.Forums
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ForumController : ControllerBase
+    public class ForumController : Controller
     {
         private readonly IForumService _forumService;
 
         public ForumController(IForumService forumService)
         {
             _forumService = forumService;
+        }
+
+        /// <summary>
+        /// Displays the page to create a new forum.
+        /// </summary>
+        [HttpGet("create")]
+        [Authorize(Roles = "Administrator")]
+        public IActionResult Create()
+        {
+            return View(); // This returns the Create view for forums
         }
 
         /// <summary>

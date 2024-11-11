@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -15,7 +14,16 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 builder.Services.AddEndpointsApiExplorer();
+// FIx postgre DateTime problem
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Services.AddSwaggerGen();
+
+//builder.Services.AddSwaggerGen( c =>
+//{ 
+//    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+//    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+//     c.IncludeXmlComments(xmlPath);
+//});
 
 builder.Services.AddRazorPages();
 
@@ -96,7 +104,7 @@ async Task CreateRoles(IServiceProvider serviceProvider, ILogger logger)
             EmailConfirmed = true
         };
 
-        var result = await userManager.CreateAsync(adminUser, configuration["Admin:AdminPass"]);
+        var result = await userManager.CreateAsync(adminUser, configuration["Admin:AdminPassword"]);
 
         if (result.Succeeded)
         {

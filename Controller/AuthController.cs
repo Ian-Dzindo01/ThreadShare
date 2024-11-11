@@ -110,10 +110,13 @@ namespace ThreadShare.Controllers
                 return Unauthorized("User is not authenticated.");
             }
 
-            Console.WriteLine(userIdClaim);
-
-            var user = await _userService.GetUserById(userIdClaim);
+            // FIX THIS
+            var user = await _userManager.FindByIdAsync(userIdClaim); ;
             var refreshToken = Request.Cookies["refreshToken"];
+
+            Console.WriteLine($"{refreshToken} **************");
+            Console.WriteLine($"{user.RefreshToken}");
+
 
             if (!user.RefreshToken.Equals(refreshToken))
             {
