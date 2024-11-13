@@ -1,13 +1,6 @@
-﻿using System.Net.Http.Headers;
-using System.Security.Claims;
-using System.Text.Json;
-using System.Threading.Tasks;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.Text.Json;
 using ThreadShare.Service.Interfaces;
-using IdentityServer4.Models;
-using System.Net.Http;
 using ThreadShare.DTOs.Data_Transfer;
-using Azure;
 
 namespace ThreadShare.Handlers
 {
@@ -61,7 +54,4 @@ namespace ThreadShare.Handlers
             return await base.SendAsync(request, cancellationToken);
         }
     }
-
-
-
 }

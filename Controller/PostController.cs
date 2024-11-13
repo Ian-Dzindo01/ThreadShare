@@ -39,12 +39,6 @@ namespace ThreadShare.Controllers
                 return BadRequest("Both Title and Body are required.");
             }
 
-            //int? forumId = await _forumService.GetForumIdByName(Title); 
-            //if (forumId == null)
-            //{
-            //    return NotFound("The specified forum does not exist.");
-            //}
-
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var postViewModel = new PostViewModel

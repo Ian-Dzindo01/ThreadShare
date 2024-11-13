@@ -20,13 +20,6 @@ builder.Services.AddEndpointsApiExplorer();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Services.AddSwaggerGen();
 
-//builder.Services.AddSwaggerGen( c =>
-//{ 
-//    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-//    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-//     c.IncludeXmlComments(xmlPath);
-//});
-
 builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql
@@ -62,7 +55,7 @@ builder.Services.AddTransient<JwtHandler>();
 
 
 // Configure HttpClient to use JwtHandler
-builder.Services.AddHttpClient("YourHttpClient")
+builder.Services.AddHttpClient("ApiHttpClient")
         .AddHttpMessageHandler<JwtHandler>();
 
 builder.Services.AddControllersWithViews();
