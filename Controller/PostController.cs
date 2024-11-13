@@ -25,8 +25,6 @@ namespace ThreadShare.Controllers
             _commentService = commentService;
         }
 
-
-
         /// <summary>
         /// Creates a new post.
         /// </summary>

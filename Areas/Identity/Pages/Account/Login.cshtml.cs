@@ -111,7 +111,6 @@ namespace ThreadShare.Areas.Identity.Pages.Account
         private async Task SetRefreshToken(RefreshToken newRefreshToken)
         {
 
-            _logger.LogInformation("SetRefreshToken function called");
             var user = await _userManager.FindByEmailAsync(Input.Email);
 
             var cookieOptions = new CookieOptions

@@ -60,10 +60,5 @@ namespace ThreadShare.Service.Implementations
         {
             return await _postRepository.GetNewest();
         }
-
-        //public async Task<List<Post>> GetAllPosts()
-        //{
-        //    return await _postRepository.GetAllPosts();
-        //}
     }
 }

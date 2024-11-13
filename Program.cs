@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Build.Execution;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ThreadShare.Data;
+using ThreadShare.Handlers;
 using ThreadShare.Models;
 using ThreadShare.Repository.Implementations;
 using ThreadShare.Repository.Interfaces;
@@ -34,6 +36,8 @@ builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfi
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>();
 
+builder.Services.AddHttpContextAccessor();
+
 
 builder.Services.AddAuthentication().AddGoogle(googleOptions =>
 {
@@ -47,12 +51,19 @@ builder.Services.AddScoped<IForumRepository, ForumRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+builder.Services.AddHttpClient();
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IForumService, ForumService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddSingleton<ITokenService, TokenService>();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddTransient<JwtHandler>();
 
+
+// Configure HttpClient to use JwtHandler
+builder.Services.AddHttpClient("YourHttpClient")
+        .AddHttpMessageHandler<JwtHandler>();
 
 builder.Services.AddControllersWithViews();
 

@@ -10,5 +10,7 @@ namespace ThreadShare.Service.Interfaces
     {
         string CreateToken(User user);
         public RefreshToken GenerateRefreshToken();
+        public string GetJwt();
+        public bool TokenIsExpired(string token);
     }
 }

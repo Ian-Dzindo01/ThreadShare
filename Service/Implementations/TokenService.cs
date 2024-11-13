@@ -12,11 +12,18 @@ namespace ThreadShare.Service.Implementations
     {
         private readonly IConfiguration _config;
         private readonly SymmetricSecurityKey _key;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public TokenService(IConfiguration config)
+        public TokenService(IConfiguration config, IHttpContextAccessor httpContextAccessor)
         {
             _config = config;
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:SigningKey"]));
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        public string GetJwtFromCookie()
+        {
+            return _httpContextAccessor.HttpContext?.Request.Cookies["authToken"];
         }
 
         public string CreateToken(User user)
@@ -44,6 +51,10 @@ namespace ThreadShare.Service.Implementations
             return tokenHandler.WriteToken(token);
         }
 
+        public string GetJwt()
+        {
+            return _httpContextAccessor.HttpContext.Request?.Cookies["AuthToken"];
+        }
 
         public RefreshToken GenerateRefreshToken()
         {
@@ -54,6 +65,33 @@ namespace ThreadShare.Service.Implementations
             };
 
             return refreshToken;
+        }
+
+        public bool TokenIsExpired(string jwt)
+        {
+            if (string.IsNullOrEmpty(jwt))
+            {
+                return true;
+            }
+
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var jsonToken = handler.ReadJwtToken(jwt);
+
+                var exp = jsonToken.Payload.Exp;
+
+                if (exp == null || exp < DateTimeOffset.UtcNow.ToUnixTimeSeconds())
+                {
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception)
+            {
+                return true;
+            }
         }
     }
 }
