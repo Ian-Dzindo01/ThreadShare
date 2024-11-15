@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ThreadShare.Data;
 using ThreadShare.Handlers;
-//using ThreadShare.Middleware;
+using ThreadShare.Middleware;
 using ThreadShare.Models;
 using ThreadShare.Repository.Implementations;
 using ThreadShare.Repository.Interfaces;
@@ -148,9 +148,9 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
+app.UseMiddleware<JwtValidationMiddleware>();
 app.UseAuthorization();
 
-//app.UseMiddleware<JwtValidationMiddleware>();
 
 app.UseEndpoints(endpoints =>
 {
