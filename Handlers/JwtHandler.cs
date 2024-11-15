@@ -19,37 +19,17 @@ namespace ThreadShare.Handlers
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var client = _httpClientFactory.CreateClient();
             var jwt = _tokenService.GetJwt();
+            jwt = await _tokenService.RefreshJwt();
 
-            if (_tokenService.TokenIsExpired(jwt))
+            // Reset refreshed JWT
+            _httpContextAccessor.HttpContext?.Response.Cookies.Append("AuthToken", jwt, new CookieOptions
             {
-                var response = await client.PostAsync("api/auth/refresh-token", null);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    var refreshedJwt = JsonSerializer.Deserialize<TokenResponse>(json);
-
-                    if (!string.IsNullOrEmpty(refreshedJwt?.Token))
-                    {
-                        jwt = refreshedJwt.Token;
-                    }
-                    else
-                    {
-                        throw new UnauthorizedAccessException("Unable to refresh token.");
-                    }
-                }
-
-                // Reset refreshed JWT
-                _httpContextAccessor.HttpContext?.Response.Cookies.Append("AuthToken", jwt, new CookieOptions
-                {
-                    HttpOnly = true, // inaccessible to JavaScript for security
-                    Secure = true,   // cookie is sent only over HTTPS (set to false for local testing if needed)
-                    SameSite = SameSiteMode.Lax, // cookie sent with cross-site requests
-                    Expires = DateTimeOffset.UtcNow.AddHours(1)
-                });
-            }
+                HttpOnly = true, // inaccessible to JavaScript for security
+                Secure = true,   // cookie is sent only over HTTPS (set to false for local testing if needed)
+                SameSite = SameSiteMode.Lax, // cookie sent with cross-site requests
+                Expires = DateTimeOffset.UtcNow.AddHours(1)
+            });
 
             return await base.SendAsync(request, cancellationToken);
         }

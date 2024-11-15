@@ -1,5 +1,3 @@
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
 using System.ComponentModel.DataAnnotations;
@@ -10,7 +8,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using ThreadShare.Models;
 using ThreadShare.DTOs.Account;
 using ThreadShare.Service.Interfaces;
-using System.Security.Claims;
 
 namespace ThreadShare.Areas.Identity.Pages.Account
 {
@@ -108,32 +105,6 @@ namespace ThreadShare.Areas.Identity.Pages.Account
             ReturnUrl = returnUrl;
         }
 
-        private async Task SetRefreshToken(RefreshToken newRefreshToken)
-        {
-
-            var user = await _userManager.FindByEmailAsync(Input.Email);
-
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                Expires = newRefreshToken.Expires,
-            };
-
-            Response.Cookies.Append("refreshToken", newRefreshToken.Token, cookieOptions);
-            user.RefreshToken = newRefreshToken.Token;
-            user.TokenCreated = newRefreshToken.Created;
-            user.TokenExpires = newRefreshToken.Expires;
-
-            var result = await _userManager.UpdateAsync(user);
-
-            if (!result.Succeeded)
-            {
-                throw new Exception("Failed to update refresh token in the database");
-            }
-
-            _logger.LogInformation($"Refresh token updated for user {user.UserName}");
-        }
-
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
@@ -160,15 +131,9 @@ namespace ThreadShare.Areas.Identity.Pages.Account
                         };
 
                         var refreshToken = _tokenService.GenerateRefreshToken();
-                        await SetRefreshToken(refreshToken);
+                        await _tokenService.SetRefreshToken(refreshToken, Input.Email);
 
-                        Response.Cookies.Append("AuthToken", UserDTO.Token, new CookieOptions
-                        {
-                            HttpOnly = true, // inaccessible to JavaScript for security
-                            Secure = true,   // cookie is sent only over HTTPS (set to false for local testing if needed)
-                            SameSite = SameSiteMode.Lax, // cookie sent with cross-site requests
-                            Expires = DateTimeOffset.UtcNow.AddHours(1)
-                        });
+                        _tokenService.SetJwt(UserDTO.Token);
 
                         _logger.LogInformation("User logged in.");
                         return LocalRedirect(returnUrl);

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ThreadShare.Service.Interfaces;
 using ThreadShare.Models;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -10,8 +9,6 @@ using Microsoft.AspNetCore.WebUtilities;
 using System.Text.Encodings.Web;
 using System.Text;
 using ThreadShare.DTOs.Account;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
-using ThreadShare.Service.Implementations;
 
 namespace ThreadShare.Controllers
 {
@@ -110,13 +107,12 @@ namespace ThreadShare.Controllers
                 return Unauthorized("User is not authenticated.");
             }
 
-            // FIX THIS. Use appropriate service
-            var user = await _userManager.FindByIdAsync(userIdClaim); ;
+            // FIX
+            var user = await _userManager.FindByIdAsync(userIdClaim);
             var refreshToken = Request.Cookies["refreshToken"];
 
             if (!user.RefreshToken.Equals(refreshToken))
             {
-
                 return Unauthorized("Invalid Refresh Token");
             }
 
@@ -128,17 +124,13 @@ namespace ThreadShare.Controllers
             string token = _tokenService.CreateToken(user);
             var newRefreshToken = _tokenService.GenerateRefreshToken();
 
-            // Set refresh token
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
                 Expires = newRefreshToken.Expires,
             };
 
-            Response.Cookies.Append("refreshToken", newRefreshToken.Token, cookieOptions);
-            user.RefreshToken = newRefreshToken.Token;
-            user.TokenCreated = newRefreshToken.Created;
-            user.TokenExpires = newRefreshToken.Expires;
+            _tokenService.SetRefreshToken(newRefreshToken, user.Email); 
 
             return Ok(token);
         }

@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ThreadShare.Data;
 using ThreadShare.Handlers;
+//using ThreadShare.Middleware;
 using ThreadShare.Models;
 using ThreadShare.Repository.Implementations;
 using ThreadShare.Repository.Interfaces;
@@ -19,6 +20,7 @@ builder.Services.AddEndpointsApiExplorer();
 // FIx postgre DateTime problem
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Services.AddSwaggerGen();
+Host.CreateDefaultBuilder(args).UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
 builder.Services.AddRazorPages();
 
@@ -39,6 +41,7 @@ builder.Services.AddAuthentication().AddGoogle(googleOptions =>
 });
 
 
+
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IForumRepository, ForumRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
@@ -49,14 +52,14 @@ builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IForumService, ForumService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddSingleton<ITokenService, TokenService>();
+builder.Services.AddScoped<ITokenService, TokenService>();    // ???
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddTransient<JwtHandler>();
 
 
-// Configure HttpClient to use JwtHandler
-builder.Services.AddHttpClient("ApiHttpClient")
-        .AddHttpMessageHandler<JwtHandler>();
+//// Configure HttpClient to use JwtHandler
+//builder.Services.AddHttpClient("ApiHttpClient")
+//        .AddHttpMessageHandler<JwtHandler>();
 
 builder.Services.AddControllersWithViews();
 
@@ -146,6 +149,8 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+//app.UseMiddleware<JwtValidationMiddleware>();
 
 app.UseEndpoints(endpoints =>
 {
