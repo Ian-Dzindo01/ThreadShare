@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Build.Execution;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -41,19 +40,17 @@ builder.Services.AddAuthentication().AddGoogle(googleOptions =>
 });
 
 
+builder.Services.AddHttpClient();
 
-builder.Services.AddScoped<IPostRepository, PostRepository>();
-builder.Services.AddScoped<IForumRepository, ForumRepository>();
-builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-builder.Services.AddHttpClient();
-builder.Services.AddScoped<IPostService, PostService>();
-builder.Services.AddScoped<IForumService, ForumService>();
-builder.Services.AddScoped<ICommentService, CommentService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ITokenService, TokenService>();    // ???
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.Scan(scan => scan
+    .FromAssemblyOf<IPostRepository>() // Scans the assembly of your repository interfaces
+    .AddClasses(classes => classes.InNamespaces("ThreadShare.Repository", "ThreadShare.Service")) // Specify namespaces
+    .AsImplementedInterfaces() // Registers classes as their implemented interfaces
+    .WithScopedLifetime() // Registers as Scoped by default
+);
+
 builder.Services.AddTransient<JwtHandler>();
 
 
@@ -148,7 +145,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
-app.UseMiddleware<JwtValidationMiddleware>();
+//app.UseMiddleware<JwtValidationMiddleware>();
 app.UseAuthorization();
 
 
