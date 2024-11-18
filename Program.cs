@@ -43,22 +43,26 @@ builder.Services.AddAuthentication().AddGoogle(googleOptions =>
 builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<JwtHandler>();
 
 builder.Services.Scan(scan => scan
-    .FromAssemblyOf<IPostRepository>() // Scans the assembly of your repository interfaces
-    .AddClasses(classes => classes.InNamespaces("ThreadShare.Repository", "ThreadShare.Service")) // Specify namespaces
-    .AsImplementedInterfaces() // Registers classes as their implemented interfaces
-    .WithScopedLifetime() // Registers as Scoped by default
+    .FromAssemblyOf<IPostRepository>() 
+    .AddClasses(classes => classes.InNamespaces("ThreadShare.Repository", "ThreadShare.Service")) 
+    .AsImplementedInterfaces() 
+    .WithScopedLifetime()
 );
 
-builder.Services.AddTransient<JwtHandler>();
 
-
-//// Configure HttpClient to use JwtHandler
-//builder.Services.AddHttpClient("ApiHttpClient")
-//        .AddHttpMessageHandler<JwtHandler>();
+builder.Services.AddHttpClient("ApiHttpClient")
+        .AddHttpMessageHandler<JwtHandler>();
 
 builder.Services.AddControllersWithViews();
+
+string jwtSigningKey = configuration["JWT:SigningKey"];
+if (string.IsNullOrEmpty(jwtSigningKey))
+{
+    throw new InvalidOperationException("JWT SigningKey is not configured.");
+}
 
 builder.Services.AddAuthentication().AddJwtBearer(options =>
 {
@@ -67,7 +71,7 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
         ValidateIssuerSigningKey = true,
         ValidateAudience = false,
         ValidateIssuer = false,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"]))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSigningKey))
     };
 });
 
@@ -130,6 +134,13 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
         c.RoutePrefix = "swagger";
     });
+
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        await CreateRoles(services, logger);
+    }
 }
 
 
@@ -139,11 +150,9 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-
+app.UseHttpsRedirection(); // Enforce HTTPS
+app.UseStaticFiles(); // Serve static files
+app.UseRouting();  // Setup routing
 app.UseAuthentication();
 //app.UseMiddleware<JwtValidationMiddleware>();
 app.UseAuthorization();
@@ -151,17 +160,10 @@ app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapControllerRoute(
+    endpoints.MapControllerRoute(   // Map attribute-routed controllers
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}");
     endpoints.MapRazorPages();
 });
-
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    var logger = services.GetRequiredService<ILogger<Program>>();
-    await CreateRoles(services, logger);
-}
 
 app.Run();
