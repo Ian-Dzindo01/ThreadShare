@@ -4,12 +4,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ThreadShare.Data;
 using ThreadShare.Handlers;
-using ThreadShare.Middleware;
 using ThreadShare.Models;
-using ThreadShare.Repository.Implementations;
 using ThreadShare.Repository.Interfaces;
-using ThreadShare.Service.Implementations;
-using ThreadShare.Service.Interfaces;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -135,6 +131,8 @@ if (app.Environment.IsDevelopment())
         c.RoutePrefix = "swagger";
     });
 
+    app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+
     using (var scope = app.Services.CreateScope())
     {
         var services = scope.ServiceProvider;
@@ -154,7 +152,6 @@ app.UseHttpsRedirection(); // Enforce HTTPS
 app.UseStaticFiles(); // Serve static files
 app.UseRouting();  // Setup routing
 app.UseAuthentication();
-//app.UseMiddleware<JwtValidationMiddleware>();
 app.UseAuthorization();
 
 
