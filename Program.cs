@@ -6,6 +6,7 @@ using ThreadShare.Data;
 using ThreadShare.DTOs.Data_Transfer;
 using ThreadShare.Handlers;
 using ThreadShare.Models;
+using ThreadShare.Repository.Implementations;
 using ThreadShare.Repository.Interfaces;
 using ThreadShare.Service.Implementations;
 using ThreadShare.Service.Interfaces;
@@ -42,11 +43,6 @@ builder.Services.AddHttpClient();
 
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
 
-// USE SCRUTOR
-// Provided by Identity hence outside of Scrutor
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<JwtHandler>();
-builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 
 builder.Services.Scan(scan => scan
     .FromAssemblyOf<IPostRepository>() 
@@ -54,6 +50,14 @@ builder.Services.Scan(scan => scan
     .AsImplementedInterfaces() 
     .WithScopedLifetime()
 );
+
+// USE SCRUTOR FOR EVERYTHING. DI for Posts twice
+// Provided by Identity hence outside of Scrutor
+builder.Services.AddScoped<PostRepository>();
+builder.Services.AddScoped<IPostRepository, CachedPostRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<JwtHandler>();
+builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 
 
 builder.Services.AddHttpClient("ApiHttpClient")
