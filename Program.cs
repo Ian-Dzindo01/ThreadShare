@@ -3,9 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ThreadShare.Data;
+using ThreadShare.DTOs.Data_Transfer;
 using ThreadShare.Handlers;
 using ThreadShare.Models;
 using ThreadShare.Repository.Interfaces;
+using ThreadShare.Service.Implementations;
+using ThreadShare.Service.Interfaces;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,12 +25,11 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql
                 (configuration.GetConnectionString("DbConnectionString")));
 
-builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>();
 
 builder.Services.AddHttpContextAccessor();
-
 
 builder.Services.AddAuthentication().AddGoogle(googleOptions =>
 {
@@ -38,8 +40,13 @@ builder.Services.AddAuthentication().AddGoogle(googleOptions =>
 
 builder.Services.AddHttpClient();
 
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
+
+// USE SCRUTOR
+// Provided by Identity hence outside of Scrutor
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<JwtHandler>();
+builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 
 builder.Services.Scan(scan => scan
     .FromAssemblyOf<IPostRepository>() 
@@ -124,14 +131,6 @@ async Task CreateRoles(IServiceProvider serviceProvider, ILogger logger)
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-        c.RoutePrefix = "swagger";
-    });
-
-    app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
     using (var scope = app.Services.CreateScope())
     {
@@ -139,8 +138,16 @@ if (app.Environment.IsDevelopment())
         var logger = services.GetRequiredService<ILogger<Program>>();
         await CreateRoles(services, logger);
     }
+
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+        c.RoutePrefix = "swagger";
+    });
 }
 
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
 if (!app.Environment.IsDevelopment())
 {
@@ -149,8 +156,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection(); // Enforce HTTPS
-app.UseStaticFiles(); // Serve static files
-app.UseRouting();  // Setup routing
+app.UseStaticFiles();      // Serve static files
+app.UseRouting();          // Setup routing
 app.UseAuthentication();
 app.UseAuthorization();
 

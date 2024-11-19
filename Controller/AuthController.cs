@@ -3,12 +3,12 @@ using ThreadShare.Service.Interfaces;
 using ThreadShare.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text.Encodings.Web;
 using System.Text;
 using ThreadShare.DTOs.Account;
+using ThreadShare.Service.Interfaces;
 
 namespace ThreadShare.Controllers
 {
