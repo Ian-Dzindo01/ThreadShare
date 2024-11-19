@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.WebUtilities;
 using System.Text.Encodings.Web;
 using System.Text;
 using ThreadShare.DTOs.Account;
-using ThreadShare.Service.Interfaces;
 
 namespace ThreadShare.Controllers
 {
@@ -79,23 +78,48 @@ namespace ThreadShare.Controllers
                 values: new { area = "Identity", userId = userId, code = code },
                 protocol: Request.Scheme);
 
-            await _emailSender.SendEmailAsync(model.Email, "Confirm your email",
+            await _emailSender.SendEmailAsync(model.Email, "Confirm Your Email",
                 $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-            NewUserDTO userDTO = new NewUserDTO
-            {
-                UserName = user.UserName,
-                Email = user.Email,
-                Token = _tokenService.CreateToken(user)
-            };
+            return Ok(new { Message = "Registration successful. Please check your email to confirm your account." });
 
-            if (!_userManager.Options.SignIn.RequireConfirmedAccount)
+            //NewUserDTO userDTO = new NewUserDTO
+            //{
+            //    UserName = user.UserName,
+            //    Email = user.Email,
+            //    Token = _tokenService.CreateToken(user)
+            //};
+
+            //if (!_userManager.Options.SignIn.RequireConfirmedAccount)
+            //{
+            //    await _signInManager.SignInAsync(user, isPersistent: false);
+            //}
+
+            //return Ok(userDTO); 
+        }
+
+        [HttpGet("confirmemail")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        {
+            if (userId == null || code == null)
+                return BadRequest("Invalid confirmation link.");
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return NotFound("User not found.");
+
+            code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+
+            if (result.Succeeded)
             {
-                await _signInManager.SignInAsync(user, isPersistent: false);
+                return Ok("Your email has been confirmed successfully.");
             }
 
-            return Ok(userDTO); 
+            return BadRequest("Error confirming your email.");
         }
+
 
         [HttpPost("refresh-token")]
         public async Task<ActionResult<string>> RefreshToken()
