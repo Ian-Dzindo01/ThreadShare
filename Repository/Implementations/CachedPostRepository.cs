@@ -32,21 +32,33 @@ namespace ThreadShare.Repository.Implementations
         public async Task Add(Post post)
         {
             await _decorated.Add(post);
+            _memoryCache.Remove("newest-posts");    // Invalidating cache
         }
 
         public async Task Delete(int id)
         {
             await _decorated.Delete(id);
+            _memoryCache.Remove("newest-posts");
         }
 
         public async Task Update(Post post)
         {
             await _decorated.Update(post);
+            _memoryCache.Remove("newest-posts");
         }
 
         public async Task<IEnumerable<Post>> GetNewest()
         {
-            return await _decorated.GetNewest();
+            string cacheKey = "newest-posts";
+
+            return await _memoryCache.GetOrCreateAsync(
+                cacheKey,
+                async entry =>
+                {
+                    entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
+
+                    return await _decorated.GetNewest();
+                });
         }
     }
 }
