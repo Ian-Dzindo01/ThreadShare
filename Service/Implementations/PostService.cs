@@ -1,9 +1,7 @@
-﻿using ThreadShare.Models;
-using ThreadShare.Data;
-using ThreadShare.Service.Interfaces;
+﻿using ThreadShare.DTOs.Entites;
+using ThreadShare.Models;
 using ThreadShare.Repository.Interfaces;
-using ThreadShare.DTOs.Entites;
-using ThreadShare.Repository.Implementations;
+using ThreadShare.Service.Interfaces;
 
 namespace ThreadShare.Service.Implementations
 {
@@ -14,7 +12,9 @@ namespace ThreadShare.Service.Implementations
         public PostService(IPostRepository postRepository)
         {
             _postRepository = postRepository;
+
         }
+
 
         public async Task CreatePost(PostViewModel model)
         {
@@ -48,7 +48,7 @@ namespace ThreadShare.Service.Implementations
 
         public async Task DeletePost(int postId)
         {
-            await _postRepository.Delete(postId); 
+            await _postRepository.Delete(postId);
         }
 
         public async Task<Post> GetPostById(int postId)

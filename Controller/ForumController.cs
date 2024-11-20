@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using ThreadShare.Service.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using ThreadShare.DTOs.Entites;
+using ThreadShare.Service.Interfaces;
 
 namespace Controllers.Forums
 {
@@ -72,6 +72,25 @@ namespace Controllers.Forums
 
             await _forumService.DeleteForum(forumId);
             return NoContent();
+        }
+
+        [HttpGet("details/{forumId}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Details(int forumId)
+        {
+            var forum = await _forumService.GetForumById(forumId);
+            if (forum == null)
+            {
+                return NotFound($"Forum with ID {forumId} not found.");
+            }
+
+            var result = new
+            {
+                forum.Name,
+                forum.Description
+            };
+
+            return Ok(result);
         }
     }
 }

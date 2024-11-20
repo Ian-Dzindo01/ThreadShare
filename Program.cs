@@ -45,16 +45,22 @@ builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"
 
 
 builder.Services.Scan(scan => scan
-    .FromAssemblyOf<IPostRepository>() 
-    .AddClasses(classes => classes.InNamespaces("ThreadShare.Repository", "ThreadShare.Service")) 
-    .AsImplementedInterfaces() 
+    .FromAssemblyOf<IPostRepository>()
+    .AddClasses(classes => classes.InNamespaces("ThreadShare.Repository", "ThreadShare.Service"))
+    .AsImplementedInterfaces()
     .WithScopedLifetime()
 );
 
 // USE SCRUTOR FOR EVERYTHING. DI for Posts twice
 // Provided by Identity hence outside of Scrutor
+
 builder.Services.AddScoped<PostRepository>();
 builder.Services.AddScoped<IPostRepository, CachedPostRepository>();
+
+builder.Services.AddScoped<ForumRepository>();
+builder.Services.AddScoped<IForumRepository, CachedForumRepository>();
+
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<JwtHandler>();
 builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();

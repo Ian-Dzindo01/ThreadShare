@@ -90,8 +90,6 @@ namespace ThreadShare.Controllers
             }
 
             var user = await _userService.GetUserById(post.UserId);
-            Console.WriteLine("Retrieving User successful");
-            Console.WriteLine(post.UserId);
             var forum = await _forumService.GetForumById(post.ForumId);
             var comments = await _commentService.GetCommentsForPost(post.Id);
 
@@ -105,5 +103,6 @@ namespace ThreadShare.Controllers
 
             return View(viewModel);
         }
+
     }
 }
