@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
+using System.Data.Entity;
 using ThreadShare.Models;
 using ThreadShare.Repository.Interfaces;
 
@@ -10,11 +11,13 @@ namespace ThreadShare.Repository.Implementations
 
         private readonly PostRepository _decorated;
         private readonly IDistributedCache _distributedCache;
+        private readonly DbContext _dbContext;
 
-        public CachedPostRepository(PostRepository decorated, IDistributedCache distributedCache)
+        public CachedPostRepository(PostRepository decorated, IDistributedCache distributedCache, DbContext dbContext)
         {
             _decorated = decorated;
             _distributedCache = distributedCache;
+            _dbContext = dbContext;
         }
 
         public async Task<Post> GetById(int id)
@@ -44,6 +47,35 @@ namespace ThreadShare.Repository.Implementations
             post = JsonConvert.DeserializeObject<Post>(
                 cachedMember);
 
+            if (post is not null)
+            {
+                _dbContext.Set<Post>().Attach(post);
+            }
+
+            return post;
+        }
+
+        public async Task Add(Post post)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task Delete(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task Update(Post post)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<Post>> GetNewest()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
             //new JsonSerializerSettings
             //{
             //    ConstructorHandling =
@@ -53,39 +85,39 @@ namespace ThreadShare.Repository.Implementations
             return post;
         }
 
-        public async Task Add(Post post)
-        {
-            await _decorated.Add(post);
-            //_memoryCache.Remove("newest-posts");    // Invalidating cache
-        }
+public async Task Add(Post post)
+{
+    await _decorated.Add(post);
+    //_memoryCache.Remove("newest-posts");    // Invalidating cache
+}
 
-        public async Task Delete(int id)
-        {
-            await _decorated.Delete(id);
-            //_memoryCache.Remove("newest-posts");
-        }
+public async Task Delete(int id)
+{
+    await _decorated.Delete(id);
+    //_memoryCache.Remove("newest-posts");
+}
 
-        public async Task Update(Post post)
-        {
-            await _decorated.Update(post);
-            //_memoryCache.Remove("newest-posts");
-        }
+public async Task Update(Post post)
+{
+    await _decorated.Update(post);
+    //_memoryCache.Remove("newest-posts");
+}
 
-        public async Task<IEnumerable<Post>> GetNewest()
-        {
+public async Task<IEnumerable<Post>> GetNewest()
+{
 
-            return await _decorated.GetNewest();
+    return await _decorated.GetNewest();
 
-            //string cacheKey = "newest-posts";
+    //string cacheKey = "newest-posts";
 
-            //return await _memoryCache.GetOrCreateAsync(
-            //    cacheKey,
-            //    async entry =>
-            //    {
-            //        entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
+    //return await _memoryCache.GetOrCreateAsync(
+    //    cacheKey,
+    //    async entry =>
+    //    {
+    //        entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
 
-            //        return await _decorated.GetNewest();
-            //    });
-        }
-    }
+    //        return await _decorated.GetNewest();
+    //    });
+}
+}
 }
