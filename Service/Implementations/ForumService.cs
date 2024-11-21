@@ -1,8 +1,7 @@
-﻿using ThreadShare.Models;
-using ThreadShare.Service.Interfaces;
+﻿using ThreadShare.DTOs.Entites;
+using ThreadShare.Models;
 using ThreadShare.Repository.Interfaces;
-using ThreadShare.DTOs.Entites;
-using ThreadShare.Repository.Implementations;
+using ThreadShare.Service.Interfaces;
 
 namespace ThreadShare.Service.Implementations
 {
@@ -33,7 +32,7 @@ namespace ThreadShare.Service.Implementations
 
             if (existingForum != null)
             {
-                existingForum.Name = model.Name;    
+                existingForum.Name = model.Name;
                 existingForum.Description = model.Description;
 
                 await _forumRepository.Update(existingForum);

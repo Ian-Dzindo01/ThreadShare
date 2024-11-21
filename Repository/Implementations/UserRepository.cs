@@ -12,6 +12,7 @@ public class UserRepository : IUserRepository
         _userManager = userManager;
     }
 
+    // IMPLEMENT MANUAL CRUD METHODS FOR CACHE INVALIDATION
     public async Task<User> GetUserById(string userId)
     {
         return await _userManager.FindByIdAsync(userId);

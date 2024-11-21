@@ -43,16 +43,20 @@ builder.Services.AddHttpClient();
 
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
 
+//builder.Services.Scan(scan => scan
+//    .FromAssemblyOf<IPostRepository>()
+//    .AddClasses(classes => classes.InNamespaces("ThreadShare.Repository", "ThreadShare.Service"))
+//    .AsImplementedInterfaces()
+//    .WithScopedLifetime()
+//);
 
-builder.Services.Scan(scan => scan
-    .FromAssemblyOf<IPostRepository>()
-    .AddClasses(classes => classes.InNamespaces("ThreadShare.Repository", "ThreadShare.Service"))
-    .AsImplementedInterfaces()
-    .WithScopedLifetime()
-);
+// USE SCRUTOR FOR EVERYTHING.
+builder.Services.AddStackExchangeRedisCache(redisOptions =>
+{
+    string connection = builder.Configuration.GetConnectionString("Redis");
 
-// USE SCRUTOR FOR EVERYTHING. DI for Posts twice
-// Provided by Identity hence outside of Scrutor
+    redisOptions.Configuration = connection;
+});
 
 builder.Services.AddScoped<PostRepository>();
 builder.Services.AddScoped<IPostRepository, CachedPostRepository>();
@@ -60,18 +64,31 @@ builder.Services.AddScoped<IPostRepository, CachedPostRepository>();
 builder.Services.AddScoped<ForumRepository>();
 builder.Services.AddScoped<IForumRepository, CachedForumRepository>();
 
-
+builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddScoped<CommentRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+
+builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<IForumService, ForumService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITokenService, TokenService>();    // ???
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
 builder.Services.AddScoped<JwtHandler>();
 builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 
 
+// For outgoing requests
 builder.Services.AddHttpClient("ApiHttpClient")
         .AddHttpMessageHandler<JwtHandler>();
 
 builder.Services.AddControllersWithViews();
 
 string jwtSigningKey = configuration["JWT:SigningKey"];
+
 if (string.IsNullOrEmpty(jwtSigningKey))
 {
     throw new InvalidOperationException("JWT SigningKey is not configured.");
