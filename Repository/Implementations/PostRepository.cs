@@ -56,11 +56,5 @@ namespace ThreadShare.Repository.Implementations
 
             return newestPosts;
         }
-
-
-        //public async Task<List<Post>> GetAllPosts()
-        //{
-        //    return await _dbContext.Posts.ToListAsync();
-        //}
     }
 }

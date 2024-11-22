@@ -58,6 +58,7 @@ builder.Services.AddStackExchangeRedisCache(redisOptions =>
     redisOptions.Configuration = connection;
 });
 
+
 builder.Services.AddScoped<PostRepository>();
 builder.Services.AddScoped<IPostRepository, CachedPostRepository>();
 

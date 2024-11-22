@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
 
 namespace ThreadShare.Models
 {
@@ -14,6 +13,7 @@ namespace ThreadShare.Models
         [ForeignKey("UserId")]
         public User User { get; set; }
 
+        //[JsonIgnore]
         public ICollection<Post> Posts { get; set; }
 
         public DateTime DateCreated { get; set; }
@@ -22,7 +22,7 @@ namespace ThreadShare.Models
         {
             DateCreated = DateTime.UtcNow;
         }
-            
+
         public DateTime UpdatedAt { get; set; }
     }
 }
