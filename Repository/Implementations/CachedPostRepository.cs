@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
-using System.Data.Entity;
+using ThreadShare.Data;
 using ThreadShare.Models;
 using ThreadShare.Repository.Interfaces;
 
@@ -11,9 +11,9 @@ namespace ThreadShare.Repository.Implementations
 
         private readonly PostRepository _decorated;
         private readonly IDistributedCache _distributedCache;
-        private readonly DbContext _dbContext;
+        private readonly AppDbContext _dbContext;
 
-        public CachedPostRepository(PostRepository decorated, IDistributedCache distributedCache, DbContext dbContext)
+        public CachedPostRepository(PostRepository decorated, IDistributedCache distributedCache, AppDbContext dbContext)
         {
             _decorated = decorated;
             _distributedCache = distributedCache;
@@ -55,69 +55,57 @@ namespace ThreadShare.Repository.Implementations
             return post;
         }
 
-        public async Task Add(Post post)
+        public async Task Delete(int postId)
         {
-            throw new NotImplementedException();
+            string cacheKey = $"post-{postId}";
+            await _decorated.Delete(postId);
+            await _distributedCache.RemoveAsync(cacheKey);
         }
 
-        public async Task Delete(int id)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task Update(Post post)
         {
-            throw new NotImplementedException();
+            _decorated.Update(post);
+            await _dbContext.SaveChangesAsync();
+
+            // Invalidate cache
+            string cacheKey = $"post-{post.Id}";
+            await _distributedCache.RemoveAsync(cacheKey);
+        }
+
+        public async Task Add(Post post)
+        {
+            _decorated.Add(post);
         }
 
         public async Task<IEnumerable<Post>> GetNewest()
         {
-            throw new NotImplementedException();
+            string cacheKey = "newest-posts";
+
+            string cachedPosts = await _distributedCache.GetStringAsync(cacheKey);
+
+            if (string.IsNullOrEmpty(cachedPosts))
+            {
+                var posts = await _decorated.GetNewest();
+
+                if (posts == null || !posts.Any())
+                {
+                    return posts;
+                }
+
+                await _distributedCache.SetStringAsync(
+                    cacheKey,
+                    JsonConvert.SerializeObject(posts),
+                    new DistributedCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2)
+                    });
+
+                return posts;
+            }
+
+            return JsonConvert.DeserializeObject<IEnumerable<Post>>(cachedPosts);
         }
     }
-
-            //new JsonSerializerSettings
-            //{
-            //    ConstructorHandling =
-            //        ConstructorHandling.AllowNonPublicDefaultConstructor
-            //}
-
-            return post;
-        }
-
-public async Task Add(Post post)
-{
-    await _decorated.Add(post);
-    //_memoryCache.Remove("newest-posts");    // Invalidating cache
 }
 
-public async Task Delete(int id)
-{
-    await _decorated.Delete(id);
-    //_memoryCache.Remove("newest-posts");
-}
-
-public async Task Update(Post post)
-{
-    await _decorated.Update(post);
-    //_memoryCache.Remove("newest-posts");
-}
-
-public async Task<IEnumerable<Post>> GetNewest()
-{
-
-    return await _decorated.GetNewest();
-
-    //string cacheKey = "newest-posts";
-
-    //return await _memoryCache.GetOrCreateAsync(
-    //    cacheKey,
-    //    async entry =>
-    //    {
-    //        entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
-
-    //        return await _decorated.GetNewest();
-    //    });
-}
-}
-}
