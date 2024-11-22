@@ -73,9 +73,14 @@ namespace ThreadShare.Repository.Implementations
             await _distributedCache.RemoveAsync(cacheKey);
         }
 
+        // Invalidate GetNewest
         public async Task Add(Post post)
         {
+            string cacheKey = "newest-posts";
             _decorated.Add(post);
+
+            // Invalidate GetNewest
+            await _distributedCache.RemoveAsync(cacheKey);
         }
 
         public async Task<IEnumerable<Post>> GetNewest()
