@@ -17,9 +17,6 @@ namespace Controllers.Forums
             _forumService = forumService;
         }
 
-        /// <summary>
-        /// Displays the page to create a new forum.
-        /// </summary>
         [HttpGet("create")]
         [Authorize(Roles = "Administrator")]
         public IActionResult Create()
@@ -57,9 +54,9 @@ namespace Controllers.Forums
         /// </summary>
         /// <param name="forumId">The ID of the forum to delete.</param>
         /// <returns>No content if deletion is successful.</returns>
-        /// <response code="204">If the deletion was successful</response>
-        /// <response code="404">If the forum was not found</response>
-        /// <response code="403">If the user is not authorized</response>
+        /// <response code="204">If the deletion was successful.</response>
+        /// <response code="404">If the forum was not found.</response>
+        /// <response code="403">If the user is not authorized.</response>
         [HttpDelete("delete/{forumId}")]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Delete(int forumId)
@@ -74,6 +71,13 @@ namespace Controllers.Forums
             return NoContent();
         }
 
+        /// <summary>
+        /// Retrieves the details of a forum.
+        /// </summary>
+        /// <param name="forumId">The ID of the forum to retrieve.</param>
+        /// <returns>The forum details including name and description.</returns>
+        /// <response code="200">Returns the forum details.</response>
+        /// <response code="404">If the forum was not found.</response>
         [HttpGet("details/{forumId}")]
         [AllowAnonymous]
         public async Task<IActionResult> Details(int forumId)

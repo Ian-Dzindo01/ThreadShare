@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ThreadShare.Models;
 using ThreadShare.Service.Interfaces;
-using ThreadShare.Models; 
 
 namespace ThreadShare.Controllers
 {
+
     public class HomeController : Controller
     {
-        private readonly IPostService _postService; 
-        private readonly IForumService _forumService; 
+        private readonly IPostService _postService;
+        private readonly IForumService _forumService;
 
         public HomeController(IPostService postService, IForumService forumService)
         {
@@ -15,6 +16,11 @@ namespace ThreadShare.Controllers
             _forumService = forumService;
         }
 
+        /// <summary>
+        /// Displays the home page with the newest posts and available forums.
+        /// </summary>
+        /// <returns>A view displaying the newest posts and forums.</returns>
+        /// <response code="200">Returns the home page view with data.</response>
         public async Task<IActionResult> Index()
         {
             var newestPosts = await _postService.GetNewestPosts();
@@ -30,4 +36,3 @@ namespace ThreadShare.Controllers
         }
     }
 }
-    

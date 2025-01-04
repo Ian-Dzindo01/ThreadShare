@@ -1,12 +1,12 @@
-﻿using System.Security.Claims;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using ThreadShare.DTOs.Entites;
 using ThreadShare.Service.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using ThreadShare.Models;
 
 namespace ThreadShare.Controllers
 {
+
     [ApiController]
     [Route("api/[controller]")]
     public class PostController : Controller
@@ -26,10 +26,14 @@ namespace ThreadShare.Controllers
         }
 
         /// <summary>
-        /// Creates a new post.
+        /// Creates a new post in a forum.
         /// </summary>
-        /// <param name="postViewModel">The post details.</param>
-        /// <returns>Returns a redirect to the homepage if successful.</returns>
+        /// <param name="Title">The title of the post.</param>
+        /// <param name="Body">The body/content of the post.</param>
+        /// <param name="ForumId">The ID of the forum where the post will be created.</param>
+        /// <returns>Redirects to the homepage on success or returns an error message if validation fails.</returns>
+        /// <response code="302">Redirects to the homepage on successful creation.</response>
+        /// <response code="400">If the Title or Body is invalid.</response>
         [HttpPost("create")]
         [Authorize]
         public async Task<IActionResult> Create(string Title, string Body, int ForumId)
@@ -54,6 +58,12 @@ namespace ThreadShare.Controllers
             return Redirect("~/");
         }
 
+        /// <summary>
+        /// Displays the page for creating a new post.
+        /// </summary>
+        /// <returns>The view for creating a new post with a list of available forums.</returns>
+        /// <response code="200">Returns the create post view with forum data.</response>
+        /// <response code="404">If no forums are available to post in.</response>
         [HttpGet("create")]
         [Authorize]
         public async Task<IActionResult> Create()
@@ -76,10 +86,12 @@ namespace ThreadShare.Controllers
         }
 
         /// <summary>
-        /// Gets the details of a post by ID.
+        /// Retrieves the details of a post by its ID.
         /// </summary>
-        /// <param name="id">The ID of the post.</param>
-        /// <returns>Returns the post details.</returns>
+        /// <param name="id">The ID of the post to retrieve.</param>
+        /// <returns>The view displaying the post details along with its forum, user, and comments.</returns>
+        /// <response code="200">Returns the details of the post.</response>
+        /// <response code="404">If the post is not found.</response>
         [HttpGet("details/{id}")]
         public async Task<IActionResult> Details(int id)
         {
@@ -103,6 +115,5 @@ namespace ThreadShare.Controllers
 
             return View(viewModel);
         }
-
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using ThreadShare.Models;
 using ThreadShare.Repository.Interfaces;
 
@@ -8,11 +9,13 @@ namespace ThreadShare.Repository.Implementations
     {
         private readonly UserRepository _decorated;
         private readonly IMemoryCache _memoryCache;
+        private readonly IDistributedCache _distributedCache;
 
-        public CachedUserRepository(UserRepository decorated, IMemoryCache memoryCache)
+        public CachedUserRepository(UserRepository decorated, IMemoryCache memoryCache, IDistributedCache distributedCache)
         {
             _decorated = decorated;
             _memoryCache = memoryCache;
+            _distributedCache = distributedCache;
         }
 
         public async Task<User> GetUserById(string userId)
