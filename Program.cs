@@ -13,6 +13,9 @@ using ThreadShare.Service.Interfaces;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+//builder.WebHost.UseUrls("http://0.0.0.0:80");
+
 var configuration = builder.Configuration;
 
 builder.Services.AddEndpointsApiExplorer();
@@ -159,6 +162,7 @@ async Task CreateRoles(IServiceProvider serviceProvider, ILogger logger)
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
 
     using (var scope = app.Services.CreateScope())
     {

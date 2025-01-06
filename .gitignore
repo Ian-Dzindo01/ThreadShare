@@ -6,6 +6,7 @@ Notes.txt
 # dotenv files
 .env
 appsettings.json
+docker-compose.yml
 
 # User-specific files
 *.rsuser

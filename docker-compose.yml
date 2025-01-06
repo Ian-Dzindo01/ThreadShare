@@ -5,27 +5,28 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:80"  # Map host port 8080 to container port 80
+      - "8080:80"
     depends_on:
       - db
       - redis
     environment:
       DB_HOST: db
       DB_USER: threadshare_user
-      DB_PASSWORD: yourpassword
+      DB_PASSWORD: securepassword123
       DB_NAME: threadshare_db
-      REDIS_HOST: redis
+      REDIS_HOST: redis  # Redis service name as the host
+      ASPNETCORE_ENVIRONMENT: Development
 
   db:
     image: postgres:15
     environment:
       POSTGRES_USER: threadshare_user
-      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_PASSWORD: securepassword123
       POSTGRES_DB: threadshare_db
     ports:
       - "5432:5432"
 
   redis:
-    image: redis:alpine
+    image: redis:alpine  # Official Redis image (lightweight version)
     ports:
-      - "6379:6379"
+      - "6379:6379"  # Expose Redis on port 6379
